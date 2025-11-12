@@ -6,6 +6,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+<?import com.comp2042.PauseScreen?>
+<?import com.comp2042.PauseScreen?>
+
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
@@ -18,6 +21,7 @@
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
+            <PauseScreen fx:id="pauseScreen"/>
         </VBox>
     </Group>
     <Label fx:id="scoreLabel" layoutX="245" layoutY="8" styleClass="scoreClass"/>

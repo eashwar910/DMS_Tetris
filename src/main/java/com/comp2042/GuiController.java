@@ -44,6 +44,9 @@ public class GuiController implements Initializable {
     @FXML
     private Label scoreLabel;
 
+    @FXML
+    private PauseScreen pauseScreen;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -85,9 +88,15 @@ public class GuiController implements Initializable {
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
                 }
+                if (keyEvent.getCode() == KeyCode.ESCAPE)
+                {
+                    pauseGame(null);
+                    keyEvent.consume();
+                }
             }
         });
         gameOverPanel.setVisible(false);
+        pauseScreen.setVisible(false);
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
@@ -221,6 +230,7 @@ public class GuiController implements Initializable {
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
+        pauseScreen.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
@@ -229,6 +239,18 @@ public class GuiController implements Initializable {
     }
 
     public void pauseGame(ActionEvent actionEvent) {
+        isPause.set(!isPause.get());
+        if (isPause.get())
+        {
+            timeLine.pause();
+            pauseScreen.setVisible(true);
+        }
+
+        else
+        {
+            timeLine.play();
+            pauseScreen.setVisible(false);
+        }
         gamePanel.requestFocus();
     }
 }
