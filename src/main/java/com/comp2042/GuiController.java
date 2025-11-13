@@ -2,6 +2,7 @@ package com.comp2042;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -46,6 +48,10 @@ public class GuiController implements Initializable {
 
     @FXML
     private PauseScreen pauseScreen;
+
+    @FXML
+    private AnchorPane groupPause;
+
 
     private Rectangle[][] displayMatrix;
 
@@ -90,13 +96,40 @@ public class GuiController implements Initializable {
                 }
                 if (keyEvent.getCode() == KeyCode.ESCAPE)
                 {
-                    pauseGame(null);
+                    if (isGameOver.getValue() == Boolean.FALSE)
+                    {
+                        togglePause();  // created new methof toggle pause
+                    }
                     keyEvent.consume();
+                    return;
                 }
             }
         });
         gameOverPanel.setVisible(false);
-        pauseScreen.setVisible(false);
+        
+        // Set up pause screen in the UI
+        if (pauseScreen != null && groupPause != null) {
+            groupPause.setVisible(false);
+            // Binding pause screen size to full screen
+            pauseScreen.prefWidthProperty().bind(groupPause.widthProperty());
+            pauseScreen.prefHeightProperty().bind(groupPause.heightProperty());
+            pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            // Binding groupPause to scereen size after scene is available
+            Platform.runLater(() -> {
+                if (groupPause.getScene() != null) {
+                    groupPause.prefWidthProperty().bind(groupPause.getScene().widthProperty());
+                    groupPause.prefHeightProperty().bind(groupPause.getScene().heightProperty());
+                } else if (groupPause.getParent() instanceof javafx.scene.layout.Pane) {
+                    javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) groupPause.getParent();
+                    groupPause.prefWidthProperty().bind(parent.widthProperty());
+                    groupPause.prefHeightProperty().bind(parent.heightProperty());
+                }
+            });
+            //Button handlers
+            pauseScreen.setResumeHandler(e -> resumeGame());
+            pauseScreen.setQuitHandler(e -> quitGame());
+            pauseScreen.setNewGameHandler(e -> newGame(e));
+        }        
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
@@ -230,7 +263,7 @@ public class GuiController implements Initializable {
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
-        pauseScreen.setVisible(false);
+        groupPause.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
         timeLine.play();
@@ -238,19 +271,44 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
     }
 
-    public void pauseGame(ActionEvent actionEvent) {
-        isPause.set(!isPause.get());
-        if (isPause.get())
-        {
-            timeLine.pause();
-            pauseScreen.setVisible(true);
-        }
+    private void togglePause() {
 
+        if (isPause.getValue() == Boolean.FALSE)
+        {
+            // Pause methodology
+            isPause.setValue(Boolean.TRUE);
+            if (timeLine != null)
+            {
+                timeLine.pause();
+            }
+            if (groupPause != null)
+            {
+                groupPause.setVisible(true);
+            }
+        }
         else
         {
+            // Resume ideology
+            resumeGame();
+        }
+    }
+    public void pauseGame(ActionEvent actionEvent) {
+        togglePause();
+    }
+
+    private void resumeGame() {
+        isPause.setValue(Boolean.FALSE);
+        if (timeLine != null) {
             timeLine.play();
-            pauseScreen.setVisible(false);
+        }
+        if (groupPause != null) {
+            groupPause.setVisible(false);
         }
         gamePanel.requestFocus();
     }
+
+    private void quitGame() {
+        Platform.exit();
+    }
+
 }

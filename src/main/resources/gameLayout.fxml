@@ -7,11 +7,12 @@
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
 <?import com.comp2042.PauseScreen?>
-<?import com.comp2042.PauseScreen?>
 
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
+
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
@@ -21,11 +22,17 @@
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
-            <PauseScreen fx:id="pauseScreen"/>
         </VBox>
     </Group>
+
+    <AnchorPane fx:id="groupPause" layoutX="0" layoutY="0">
+        <PauseScreen fx:id="pauseScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
+    </AnchorPane>
+
     <Label fx:id="scoreLabel" layoutX="245" layoutY="8" styleClass="scoreClass"/>
+
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
+
 </Pane>
