@@ -3,6 +3,7 @@ package com.comp2042;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import java.util.List;
 
 import java.awt.*;
 
@@ -95,8 +96,16 @@ public class SimpleBoard implements Board {
     }
 
     @Override
+
+    //obtains the view data for next 3 bricks instead of 1
     public ViewData getViewData() {
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), brickGenerator.getNextBrick().getShapeMatrix().get(0));
+        List<com.comp2042.logic.bricks.Brick> preview = brickGenerator.getNextBricks(3);
+        int[][][] nextBrickData = new int[preview.size()][][];
+        for (int i = 0; i < preview.size(); i++)
+        {
+            nextBrickData[i] = preview.get(i).getShapeMatrix().get(0);
+        }
+        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBrickData);
     }
 
     @Override

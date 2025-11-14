@@ -3,9 +3,9 @@
 }
 
 .nextBrick {
-    -fx-border-width: 2px;
-    -fx-border-color: whitesmoke;
-    -fx-border-radius: 17px;
+    -fx-border-width: 3px;
+    -fx-border-color: #61a2b1;
+    -fx-border-radius: 0px;
 }
 
 .gameBoard {
@@ -17,7 +17,7 @@
 .nextBrickLabel {
     -fx-font-family: "Let's go Digital";
     -fx-padding: 20px 0 0 0;
-    -fx-font-size: 16px;
+    -fx-font-size: 25px;
     -fx-text-fill: yellow;
 }
 

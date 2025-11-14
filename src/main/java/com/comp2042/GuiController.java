@@ -60,6 +60,14 @@ public class GuiController implements Initializable {
     @FXML
     private javafx.scene.layout.BorderPane gameBoard;
 
+    @FXML
+    private GridPane nextBrickPanel1;
+
+    @FXML
+    private GridPane nextBrickPanel2;
+
+    @FXML
+    private GridPane nextBrickPanel3;
 
     private Rectangle[][] displayMatrix;
 
@@ -68,6 +76,12 @@ public class GuiController implements Initializable {
     private Rectangle[][] rectangles;
 
     private Timeline timeLine;
+
+    private Rectangle[][] nextBrickRectangles1;
+
+    private Rectangle[][] nextBrickRectangles2;
+
+    private Rectangle[][] nextBrickRectangles3;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -230,6 +244,52 @@ public class GuiController implements Initializable {
             }
         }
 
+        // gets the next three bricks data and recreates the block and adds it to the panels
+        int[][][] nextBrickDataArr = brick.getNextBrickData();
+
+        // first next brick (right next)
+        nextBrickRectangles1 = new Rectangle[nextBrickDataArr[0].length][nextBrickDataArr[0][0].length];
+        for (int i = 0; i < nextBrickDataArr[0].length; i++)
+        {
+            for (int j = 0; j < nextBrickDataArr[0][i].length; j++)
+            {
+                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rectangle.setFill(getFillColor(nextBrickDataArr[0][i][j]));
+                nextBrickRectangles1[i][j] = rectangle;
+                nextBrickPanel1.add(rectangle, j, i);
+
+            }
+        }
+
+        // second next brick
+        nextBrickRectangles2 = new Rectangle[nextBrickDataArr[1].length][nextBrickDataArr[1][0].length];
+        for (int i = 0; i < nextBrickDataArr[1].length; i++)
+        {
+            for (int j = 0; j < nextBrickDataArr[1][i].length; j++)
+            {
+                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rectangle.setFill(getFillColor(nextBrickDataArr[1][i][j]));
+                nextBrickRectangles2[i][j] = rectangle;
+                nextBrickPanel2.add(rectangle, j, i);
+
+            }
+        }
+
+        // third next brick
+        nextBrickRectangles3 = new Rectangle[nextBrickDataArr[2].length][nextBrickDataArr[2][0].length];
+        for (int i = 0; i < nextBrickDataArr[2].length; i++)
+        {
+            for (int j = 0; j < nextBrickDataArr[2][i].length; j++)
+            {
+                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                rectangle.setFill(getFillColor(nextBrickDataArr[2][i][j]));
+                nextBrickRectangles3[i][j] = rectangle;
+                nextBrickPanel3.add(rectangle, j, i);
+
+            }
+        }
+
+
         // position the brick after scene is laid out
         Platform.runLater(() -> {
             positionBrickPanel(brick);
@@ -300,6 +360,33 @@ public class GuiController implements Initializable {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++)
                 {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                }
+            }
+
+            // goes through the next brick data and updates the next brick panels
+            int[][][] nextBrickDataArr = brick.getNextBrickData();
+
+            for (int i = 0; i < nextBrickDataArr[0].length; i++)
+            {
+                for (int j = 0; j < nextBrickDataArr[0][i].length; j++)
+                {
+                    setRectangleData(nextBrickDataArr[0][i][j], nextBrickRectangles1[i][j]);
+                }
+            }
+
+            for (int i = 0; i < nextBrickDataArr[1].length; i++)
+            {
+                for (int j = 0; j < nextBrickDataArr[1][i].length; j++)
+                {
+                    setRectangleData(nextBrickDataArr[1][i][j], nextBrickRectangles2[i][j]);
+                }
+            }
+
+            for (int i = 0; i < nextBrickDataArr[2].length; i++)
+            {
+                for (int j = 0; j < nextBrickDataArr[2][i].length; j++)
+                {
+                    setRectangleData(nextBrickDataArr[2][i][j], nextBrickRectangles3[i][j]);
                 }
             }
         }

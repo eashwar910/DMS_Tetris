@@ -31,6 +31,17 @@
         <PauseScreen fx:id="pauseScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
     </AnchorPane>
 
+    <VBox layoutX="465" layoutY="140">
+        <Label text="Next" styleClass="nextBrickLabel" />
+        <StackPane styleClass="nextBrick" prefWidth="140" prefHeight="180">
+            <VBox alignment="CENTER" spacing="6" StackPane.alignment="CENTER">
+                <GridPane fx:id="nextBrickPanel1" vgap="1" hgap="1" alignment="CENTER"/>
+                <GridPane fx:id="nextBrickPanel2" vgap="1" hgap="1" alignment="CENTER"/>
+                <GridPane fx:id="nextBrickPanel3" vgap="1" hgap="1" alignment="CENTER"/>
+            </VBox>
+        </StackPane>
+    </VBox>
+
     <Label fx:id="scoreLabel" layoutX="465" layoutY="80" styleClass="scoreClass"/>
 
     <stylesheets>

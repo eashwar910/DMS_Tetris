@@ -5,9 +5,9 @@ public final class ViewData {
     private final int[][] brickData;
     private final int xPosition;
     private final int yPosition;
-    private final int[][] nextBrickData;
+    private final int[][][] nextBrickData;  //updated to hold 3 next bricks
 
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData) {
+    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][][] nextBrickData) {
         this.brickData = brickData;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
@@ -26,7 +26,16 @@ public final class ViewData {
         return yPosition;
     }
 
-    public int[][] getNextBrickData() {
-        return MatrixOperations.copy(nextBrickData);
+    // changed the method to get next brick data
+    // updated it from holding the structure of the next brick as a 2d array
+    // to holding a queue of the next 3 next bricks as 2 arrays
+    public int[][][] getNextBrickData() {
+
+        int[][][] copy = new int[nextBrickData.length][][];
+        for (int i = 0; i < nextBrickData.length; i++) {
+            copy[i] = MatrixOperations.copy(nextBrickData[i]);
+        }
+        return copy;
+
     }
 }
