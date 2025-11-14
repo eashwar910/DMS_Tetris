@@ -10,8 +10,8 @@
 
 .gameBoard {
     -fx-border-color: linear-gradient(#2A5058, #61a2b1);
-    -fx-border-width: 12px;
-    -fx-border-radius: 12px;
+    -fx-border-width: 5px;
+    -fx-border-radius: 5px;
 }
 
 .nextBrickLabel {

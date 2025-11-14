@@ -13,13 +13,15 @@
 
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
 
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
+    <StackPane fx:id = "gameBoardContainer">
+        <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+            <center>
+                <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="95" layoutX="40"/>
+            </center>
+        </BorderPane>
+    </StackPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+    <Group fx:id="groupNotification" layoutX="220" layoutY="180">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
@@ -29,7 +31,7 @@
         <PauseScreen fx:id="pauseScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
     </AnchorPane>
 
-    <Label fx:id="scoreLabel" layoutX="245" layoutY="8" styleClass="scoreClass"/>
+    <Label fx:id="scoreLabel" layoutX="465" layoutY="80" styleClass="scoreClass"/>
 
     <stylesheets>
         <URL value="@window_style.css"/>

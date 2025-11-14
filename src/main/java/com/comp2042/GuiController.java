@@ -23,6 +23,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -52,6 +54,12 @@ public class GuiController implements Initializable {
     @FXML
     private AnchorPane groupPause;
 
+    @FXML
+    private javafx.scene.layout.StackPane gameBoardContainer;
+
+    @FXML
+    private javafx.scene.layout.BorderPane gameBoard;
+
 
     private Rectangle[][] displayMatrix;
 
@@ -64,6 +72,11 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
+    // scene co ordinates for efficient brick positioning
+    private final DoubleProperty gamePanelSceneX = new SimpleDoubleProperty();
+
+    private final DoubleProperty gamePanelSceneY = new SimpleDoubleProperty();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -106,6 +119,65 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+
+        // Centering the StackPane - Gameboard container (borderpane + game panel)
+        // nfs : Gameboard container is the stack pane where the border and the game panel is combined
+        // reference : https://stackoverflow.com/questions/51142808/javafx-bind-pathtransitions-element-coordinates
+
+
+        Platform.runLater( () -> {
+            if (gameBoardContainer != null && gameBoard != null)
+            {
+                javafx.scene.Scene gamescene = gameBoardContainer.getScene();
+                if (gamescene != null)
+                {
+
+                    // Centre both ways ( secen width (or) height - borderpane width / 2 )
+                    // calculates the leftover space in the screen after the borderpane appears in the scene
+                    // divides it by 2 to get the centre space
+                    gameBoardContainer.layoutXProperty().bind(
+                            gamescene.widthProperty().subtract(gameBoard.widthProperty()).divide(2)
+                            );
+                    gameBoardContainer.layoutYProperty().bind(
+                            gamescene.heightProperty().subtract(gameBoard.heightProperty()).divide(2)
+                    );
+
+                    // bind the "cache" variables to the obtained values for efficiency
+
+                    gamePanelSceneX.bind(
+                            gameBoardContainer.layoutXProperty().add(gamePanel.layoutXProperty())
+                    );
+                    gamePanelSceneY.bind(
+                            gameBoardContainer.layoutYProperty().add(gamePanel.layoutYProperty())
+                    );
+                }
+
+                // if the scene has not loaded immediately, use the pane height and width
+                else if (gameBoardContainer.getParent() instanceof javafx.scene.layout.Pane)
+                {
+
+                    // obtains parent node of gameboard container and casts it to Pane
+                    // this way we can obtain its height and width properties
+                    javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) gameBoardContainer.getParent();
+
+                    // use the pane height and width and do the same calculation
+                    gameBoardContainer.layoutXProperty().bind(
+                            parent.widthProperty().subtract(gameBoard.widthProperty()).divide(2)
+                    );
+                    gameBoardContainer.layoutXProperty().bind(
+                            parent.heightProperty().subtract(gameBoard.heightProperty()).divide(2)
+                    );
+
+                    // bind the "cache" variables to the obtained values for efficiency
+                    gamePanelSceneX.bind(
+                            gameBoardContainer.layoutXProperty().add(gamePanel.layoutXProperty())
+                    );
+                    gamePanelSceneY.bind(
+                            gameBoardContainer.layoutYProperty().add(gamePanel.layoutYProperty())
+                    );
+                }
+            }
+        });
         
         // Set up pause screen in the UI
         if (pauseScreen != null && groupPause != null) {
@@ -139,12 +211,12 @@ public class GuiController implements Initializable {
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
-        for (int i = 2; i < boardMatrix.length; i++) {
+        for (int i = 0; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i - 2);
+                gamePanel.add(rectangle, j, i);
             }
         }
 
@@ -157,8 +229,11 @@ public class GuiController implements Initializable {
                 brickPanel.add(rectangle, j, i);
             }
         }
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-        brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
+
+        // position the brick after scene is laid out
+        Platform.runLater(() -> {
+            positionBrickPanel(brick);
+        });
 
 
         timeLine = new Timeline(new KeyFrame(
@@ -204,12 +279,26 @@ public class GuiController implements Initializable {
     }
 
 
+    // method to calculate the brick position based on the cached variables
+    // the game panel should be 10 x 20 (like actual tetris)
+    // uses the game panel vgap and hgap and matchches the cell spacing
+
+    private void positionBrickPanel(ViewData brick){
+        double cellWidth = gamePanel.getHgap() + BRICK_SIZE;
+        double cellHeight = gamePanel.getVgap() + BRICK_SIZE;
+
+        brickPanel.setLayoutX(gamePanelSceneX.get() + brick.getxPosition() * cellWidth);
+        brickPanel.setLayoutY(gamePanelSceneY.get() + brick.getyPosition() * cellHeight);
+    }
+
     private void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
-            brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+        if (isPause.getValue() == Boolean.FALSE)
+        {
+            positionBrickPanel(brick); // use the ppreviouslt defined function
+            for (int i = 0; i < brick.getBrickData().length; i++)
+            {
+                for (int j = 0; j < brick.getBrickData()[i].length; j++)
+                {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
             }
@@ -217,7 +306,7 @@ public class GuiController implements Initializable {
     }
 
     public void refreshGameBackground(int[][] board) {
-        for (int i = 2; i < board.length; i++) {
+        for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 setRectangleData(board[i][j], displayMatrix[i][j]);
             }
