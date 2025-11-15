@@ -25,7 +25,6 @@ import javafx.util.Duration;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -68,6 +67,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private GridPane nextBrickPanel3;
+
+    @FXML
+    private javafx.scene.layout.StackPane gameOverOverlay;
 
     private Rectangle[][] displayMatrix;
 
@@ -133,6 +135,12 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+
+        // game over overlay is hidden by default
+        if (gameOverOverlay != null)
+        {
+            gameOverOverlay.setVisible(false);
+        }
 
         // Centering the StackPane - Gameboard container (borderpane + game panel)
         // nfs : Gameboard container is the stack pane where the border and the game panel is combined
@@ -215,6 +223,24 @@ public class GuiController implements Initializable {
             pauseScreen.setResumeHandler(e -> resumeGame());
             pauseScreen.setQuitHandler(e -> quitGame());
             pauseScreen.setNewGameHandler(e -> newGame(e));
+        }   
+        
+        // using platform.runlater method to ensure that the scene is loaded before binding the overlay size
+        // binding the game over overlay size to the scene size
+        if (gameOverOverlay != null) {
+            Platform.runLater(() -> {
+                if (gameOverOverlay.getScene() != null)
+                {
+                    gameOverOverlay.prefWidthProperty().bind(gameOverOverlay.getScene().widthProperty());
+                    gameOverOverlay.prefHeightProperty().bind(gameOverOverlay.getScene().heightProperty());
+                } 
+                else if (gameOverOverlay.getParent() instanceof javafx.scene.layout.Pane) 
+                {
+                    javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) gameOverOverlay.getParent();
+                    gameOverOverlay.prefWidthProperty().bind(parent.widthProperty());
+                    gameOverOverlay.prefHeightProperty().bind(parent.heightProperty());
+                }
+            });
         }        
 
         final Reflection reflection = new Reflection();
@@ -433,12 +459,20 @@ public class GuiController implements Initializable {
     public void gameOver() {
         timeLine.stop();
         gameOverPanel.setVisible(true);
+        if (gameOverOverlay != null)
+        {
+            gameOverOverlay.setVisible(true);
+        }
         isGameOver.setValue(Boolean.TRUE);
     }
 
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop();
         gameOverPanel.setVisible(false);
+        if (gameOverOverlay != null)
+        {
+            gameOverOverlay.setVisible(false);
+        }
         groupPause.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();

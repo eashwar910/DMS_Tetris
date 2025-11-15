@@ -21,11 +21,7 @@
         </BorderPane>
     </StackPane>
 
-    <Group fx:id="groupNotification" layoutX="220" layoutY="180">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
-        </VBox>
-    </Group>
+    <Group fx:id="groupNotification" layoutX="220" layoutY="180" />    
 
     <AnchorPane fx:id="groupPause" layoutX="0" layoutY="0">
         <PauseScreen fx:id="pauseScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
@@ -41,6 +37,10 @@
             </VBox>
         </StackPane>
     </VBox>
+
+    <StackPane fx:id="gameOverOverlay" style="-fx-background-color: rgba(0,0,0,0.6);">
+        <GameOverPanel fx:id="gameOverPanel"/>
+    </StackPane>    
 
     <Label fx:id="scoreLabel" layoutX="465" layoutY="80" styleClass="scoreClass"/>
 
