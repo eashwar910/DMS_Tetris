@@ -244,9 +244,15 @@ public class GuiController implements Initializable {
         }        
 
         final Reflection reflection = new Reflection();
-        reflection.setFraction(0.8);
-        reflection.setTopOpacity(0.9);
-        reflection.setTopOffset(-12);
+        reflection.setFraction(0.28);
+        reflection.setTopOpacity(0.35);
+        reflection.setTopOffset(10);
+
+        // add reflection effect to game board
+        if (gameBoardContainer != null)
+        {
+            gameBoardContainer.setEffect(reflection);
+        }
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
