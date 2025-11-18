@@ -142,6 +142,13 @@ public class GuiController implements Initializable {
             gameOverOverlay.setVisible(false);
         }
 
+        // add the restart/exit handlers to the GameOverPanel
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.setRestartEventHandler(e -> newGame(e));
+            gameOverPanel.setExitEventHandler(e -> quitGame());
+        }
+
         // Centering the StackPane - Gameboard container (borderpane + game panel)
         // nfs : Gameboard container is the stack pane where the border and the game panel is combined
         // reference : https://stackoverflow.com/questions/51142808/javafx-bind-pathtransitions-element-coordinates
