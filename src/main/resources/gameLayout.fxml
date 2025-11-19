@@ -6,21 +6,67 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+<?import com.comp2042.PauseScreen?>
+
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
-    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
-        <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
-        </center>
-    </BorderPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
-        <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+    <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
+
+    <StackPane fx:id = "gameBoardContainer">
+        <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+            <center>
+                <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="95" layoutX="40"/>
+            </center>
+        </BorderPane>
+    </StackPane>
+
+    <Group fx:id="groupNotification" layoutX="220" layoutY="180" />    
+
+    <AnchorPane fx:id="groupPause" layoutX="0" layoutY="0">
+        <PauseScreen fx:id="pauseScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
+    </AnchorPane>
+
+
+    <Label fx:id="scoreLabel" layoutX="465" layoutY="80" styleClass="scoreClass"/>
+
+    <VBox layoutX="465" layoutY="140">
+        <Label text="Next" styleClass="nextBrickLabel" />
+        <StackPane styleClass="nextBrick" prefWidth="140" prefHeight="180">
+            <VBox alignment="CENTER" spacing="6" StackPane.alignment="CENTER">
+                <GridPane fx:id="nextBrickPanel1" vgap="1" hgap="1" alignment="CENTER"/>
+                <GridPane fx:id="nextBrickPanel2" vgap="1" hgap="1" alignment="CENTER"/>
+                <GridPane fx:id="nextBrickPanel3" vgap="1" hgap="1" alignment="CENTER"/>
+            </VBox>
+        </StackPane>
+    </VBox>
+
+    <StackPane fx:id="gameOverOverlay" style="-fx-background-color: rgba(0,0,0,0.6);">
+        <GameOverPanel fx:id="gameOverPanel"/>
+    </StackPane>
+
+    <AnchorPane fx:id="startOverlay" layoutX="0" layoutY="0" style="-fx-background-color: rgba(0,0,0,1);">
+        <VBox alignment="CENTER" spacing="16" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+            <Label text="TETRIS" styleClass="titleClass" />
+            <Button fx:id="playButton" text="Play" styleClass="ipad-dark-grey" prefWidth="240" />
+            <Button fx:id="helpButton" text="Help" styleClass="ipad-dark-grey" prefWidth="240" />
         </VBox>
-    </Group>
+        <Label text="By Eashwar" styleClass="creditClass" AnchorPane.rightAnchor="12.0" AnchorPane.bottomAnchor="12.0"/>
+    </AnchorPane>
+
+    <AnchorPane fx:id="helpOverlay" layoutX="0" layoutY="0" style="-fx-background-color: rgba(0,0,0,1);" visible="false">
+        <VBox alignment="CENTER" spacing="8" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+            <Label text="Controls" styleClass="nextBrickLabel" />
+            <Label text="Left/Right: Arrow keys" styleClass="helpInfo" />
+            <Label text="Rotate: Up Arrow" styleClass="helpInfo" />
+            <Label text="Soft drop: Down Arrow" styleClass="helpInfo" />
+            <Label text="Pause/Resume: Esc" styleClass="helpInfo" />
+            <Button fx:id="closeHelpButton" text="Close" styleClass="ipad-dark-grey" />
+        </VBox>
+
+    </AnchorPane>
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
+
 </Pane>
