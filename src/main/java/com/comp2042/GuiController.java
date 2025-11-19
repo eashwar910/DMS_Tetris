@@ -71,6 +71,21 @@ public class GuiController implements Initializable {
     @FXML
     private javafx.scene.layout.StackPane gameOverOverlay;
 
+    @FXML
+    private AnchorPane startOverlay;
+
+    @FXML
+    private javafx.scene.control.Button playButton;
+
+    @FXML
+    private javafx.scene.control.Button helpButton;
+
+    @FXML
+    private AnchorPane helpOverlay;
+
+    @FXML
+    private javafx.scene.control.Button closeHelpButton;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -93,6 +108,9 @@ public class GuiController implements Initializable {
     private final DoubleProperty gamePanelSceneX = new SimpleDoubleProperty();
 
     private final DoubleProperty gamePanelSceneY = new SimpleDoubleProperty();
+
+    private boolean helpFromStart = false;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -149,10 +167,66 @@ public class GuiController implements Initializable {
             gameOverPanel.setExitEventHandler(e -> quitGame());
         }
 
+        // check for existence of the start overlay screen
+        // bind the width and height to that of the scene (if scene exists)
+        if (startOverlay != null)
+        {
+            startOverlay.setVisible(true);
+            Platform.runLater(() -> {
+                if (startOverlay.getScene() != null)
+                {
+                    startOverlay.prefWidthProperty().bind(startOverlay.getScene().widthProperty());
+                    startOverlay.prefHeightProperty().bind(startOverlay.getScene().heightProperty());
+                }
+
+                // if the scene has not loaded immediately, use the pane height and width
+                else if (startOverlay.getParent() instanceof javafx.scene.layout.Pane)
+                {
+                    javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) startOverlay.getParent();
+                    startOverlay.prefWidthProperty().bind(parent.widthProperty());
+                    startOverlay.prefHeightProperty().bind(parent.heightProperty());
+                }
+            });
+        }
+
+        if (playButton != null)
+        {
+            playButton.setOnAction(e -> startGame());
+        }
+
+        // do exactly what we did with the start screen for the help screen
+        if (helpOverlay != null)
+        {
+            helpOverlay.setVisible(false);
+            Platform.runLater(() -> {
+                if (helpOverlay.getScene() != null)
+                {
+                    helpOverlay.prefWidthProperty().bind(helpOverlay.getScene().widthProperty());
+                    helpOverlay.prefHeightProperty().bind(helpOverlay.getScene().heightProperty());
+                }
+
+                else if (helpOverlay.getParent() instanceof javafx.scene.layout.Pane)
+                {
+                    javafx.scene.layout.Pane parent = (javafx.scene.layout.Pane) helpOverlay.getParent();
+                    helpOverlay.prefWidthProperty().bind(parent.widthProperty());
+                    helpOverlay.prefHeightProperty().bind(parent.heightProperty());
+                }
+            });
+        }
+
+        if (helpButton != null)
+        {
+            helpButton.setOnAction(e -> showHelp());
+        }
+
+        if (closeHelpButton != null)
+        {
+            closeHelpButton.setOnAction(e -> hideHelp());
+        }
+
         // Centering the StackPane - Gameboard container (borderpane + game panel)
         // nfs : Gameboard container is the stack pane where the border and the game panel is combined
         // reference : https://stackoverflow.com/questions/51142808/javafx-bind-pathtransitions-element-coordinates
-
 
         Platform.runLater( () -> {
             if (gameBoardContainer != null && gameBoard != null)
@@ -489,9 +563,60 @@ public class GuiController implements Initializable {
         groupPause.setVisible(false);
         eventListener.createNewGame();
         gamePanel.requestFocus();
-        timeLine.play();
+        if (startOverlay != null && startOverlay.isVisible())
+        {
+            timeLine.pause();
+        }
+
+        else
+        {
+            timeLine.play();
+        }
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+    }
+
+    // new method for startgame
+    private void startGame() {
+        if (startOverlay != null)
+        {
+            startOverlay.setVisible(false);
+        }
+        hideHelp();
+        if (timeLine != null)
+        {
+            timeLine.play();
+        }
+        isPause.setValue(Boolean.FALSE);
+        gamePanel.requestFocus();
+    }
+
+    // method to show help once the button is pressed
+    private void showHelp() {
+        if (helpOverlay != null)
+        {
+            helpFromStart = startOverlay != null && startOverlay.isVisible();
+            helpOverlay.setVisible(true);
+            helpOverlay.toFront();
+            if (startOverlay != null)
+            {
+                startOverlay.setVisible(false);
+            }
+        }
+    }
+
+    // method to close help when "close" is pressed
+    private void hideHelp() {
+        if (helpOverlay != null)
+        {
+            helpOverlay.setVisible(false);
+        }
+
+        if (helpFromStart && startOverlay != null)
+        {
+            startOverlay.setVisible(true);
+        }
+        helpFromStart = false;
     }
 
     private void togglePause() {
