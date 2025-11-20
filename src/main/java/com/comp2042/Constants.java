@@ -19,7 +19,7 @@ public final class Constants {
 
     //SimpleBoard.java
     public static final int BRICK_SPAWN_X = 3;
-    public static final int BRICK_SPAWN_Y = -1;
+    public static final int BRICK_SPAWN_Y = -3;
     public static final int PREVIEW_COUNT = 3;
 
     //in Main.java

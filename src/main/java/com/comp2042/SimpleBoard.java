@@ -1,7 +1,6 @@
 package com.comp2042;
 
 import com.comp2042.logic.bricks.Brick;
-import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 import java.util.List;
 import java.awt.Point;
@@ -10,7 +9,7 @@ public class SimpleBoard implements Board {
 
     private final int width;
     private final int height;
-    private final BrickGenerator brickGenerator;
+    private final com.comp2042.logic.bricks.RandomBrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
     private int[][] currentGameMatrix;
     private Point currentOffset;
@@ -130,6 +129,7 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
+        brickGenerator.reset();
         createNewBrick();
     }
 }

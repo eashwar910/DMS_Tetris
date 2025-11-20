@@ -19,8 +19,18 @@ public class MatrixOperations {
             for (int j = 0; j < brick[i].length; j++) {
                 int targetX = x + i;
                 int targetY = y + j;
-                if (brick[j][i] != 0 && (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)) {
-                    return true;
+                // added a constraint such that the block can spawn from above the game grid
+                // but the game wont return out of bounds error
+                if (brick[j][i] != 0)
+                {
+                    if (targetY < 0)
+                    {
+                        continue;
+                    }
+                    if (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -54,7 +64,10 @@ public class MatrixOperations {
                 int targetX = x + i;
                 int targetY = y + j;
                 if (brick[j][i] != 0) {
-                    copy[targetY][targetX] = brick[j][i];
+                    if (targetY >= 0 && !checkOutOfBound(copy, targetX, targetY))
+                    {
+                        copy[targetY][targetX] = brick[j][i];
+                    }
                 }
             }
         }
