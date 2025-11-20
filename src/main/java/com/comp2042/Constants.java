@@ -22,9 +22,15 @@ public final class Constants {
     public static final int BRICK_SPAWN_Y = -1;
     public static final int PREVIEW_COUNT = 3;
 
-    // Used in Main.java
+    //in Main.java
     public static final int WINDOW_WIDTH = 670;
     public static final int WINDOW_HEIGHT = 550;
+
+    // Effects.java
+    public static final double SCORE_FADE_MS = 2000.0;
+    public static final double SCORE_TRANSLATE_MS = 2500.0; 
+    public static final double SCORE_TRANSLATE_DELTA_Y = -40.0; 
+    public static final double GLOW_LEVEL_SCORE = 0.6; 
 
     private Constants() {}
 }

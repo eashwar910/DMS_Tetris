@@ -1,16 +1,12 @@
 package com.comp2042;
 
-import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Effect;
-import javafx.scene.effect.Glow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class NotificationPanel extends BorderPane {
 
@@ -19,7 +15,7 @@ public class NotificationPanel extends BorderPane {
         setMinWidth(220);
         final Label score = new Label(text);
         score.getStyleClass().add("bonusStyle");
-        final Effect glow = new Glow(0.6);
+        final Effect glow = Effects.glow(Constants.GLOW_LEVEL_SCORE);
         score.setEffect(glow);
         score.setTextFill(Color.WHITE);
         setCenter(score);
@@ -27,13 +23,7 @@ public class NotificationPanel extends BorderPane {
     }
 
     public void showScore(ObservableList<Node> list) {
-        FadeTransition ft = new FadeTransition(Duration.millis(2000), this);
-        TranslateTransition tt = new TranslateTransition(Duration.millis(2500), this);
-        tt.setToY(this.getLayoutY() - 40);
-        ft.setFromValue(1);
-        ft.setToValue(0);
-        ParallelTransition transition = new ParallelTransition(tt, ft);
-        // lambda expression to remove the node from the list when the transition is finished
+        ParallelTransition transition = Effects.scorePopupTransition(this); // use the function defined in effects.java
         transition.setOnFinished(e -> list.remove(NotificationPanel.this));
         transition.play();
     }

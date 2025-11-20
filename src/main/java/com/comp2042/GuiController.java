@@ -318,12 +318,7 @@ public class GuiController implements Initializable {
             });
         }        
 
-        final Reflection reflection = new Reflection();
-        reflection.setFraction(Constants.REFLECTION_FRACTION);
-        reflection.setTopOpacity(Constants.REFLECTION_TOP_OPACITY);
-        reflection.setTopOffset(Constants.REFLECTION_TOP_OFFSET);
-
-        // add reflection effect to game board
+        final Reflection reflection = Effects.createBoardReflection(); //function from effects.java
         if (gameBoardContainer != null)
         {
             gameBoardContainer.setEffect(reflection);
