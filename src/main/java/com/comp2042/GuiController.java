@@ -1,11 +1,17 @@
 package com.comp2042;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,15 +26,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class GuiController implements Initializable {
-
-    private static final int BRICK_SIZE = 20;
 
     @FXML
     private GridPane gamePanel;
@@ -112,7 +111,7 @@ public class GuiController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        Font.loadFont(getClass().getClassLoader().getResource(Constants.FONT_DIGITAL).toExternalForm(), Constants.FONT_SIZE);
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
 
@@ -320,9 +319,9 @@ public class GuiController implements Initializable {
         }        
 
         final Reflection reflection = new Reflection();
-        reflection.setFraction(0.28);
-        reflection.setTopOpacity(0.35);
-        reflection.setTopOffset(10);
+        reflection.setFraction(Constants.REFLECTION_FRACTION);
+        reflection.setTopOpacity(Constants.REFLECTION_TOP_OPACITY);
+        reflection.setTopOffset(Constants.REFLECTION_TOP_OFFSET);
 
         // add reflection effect to game board
         if (gameBoardContainer != null)
@@ -335,7 +334,7 @@ public class GuiController implements Initializable {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = 0; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                 rectangle.setFill(Color.TRANSPARENT);
                 displayMatrix[i][j] = rectangle;
                 gamePanel.add(rectangle, j, i);
@@ -345,7 +344,7 @@ public class GuiController implements Initializable {
         rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                 rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
@@ -361,7 +360,7 @@ public class GuiController implements Initializable {
         {
             for (int j = 0; j < nextBrickDataArr[0][i].length; j++)
             {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                 rectangle.setFill(getFillColor(nextBrickDataArr[0][i][j]));
                 nextBrickRectangles1[i][j] = rectangle;
                 nextBrickPanel1.add(rectangle, j, i);
@@ -375,7 +374,7 @@ public class GuiController implements Initializable {
         {
             for (int j = 0; j < nextBrickDataArr[1][i].length; j++)
             {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                 rectangle.setFill(getFillColor(nextBrickDataArr[1][i][j]));
                 nextBrickRectangles2[i][j] = rectangle;
                 nextBrickPanel2.add(rectangle, j, i);
@@ -389,7 +388,7 @@ public class GuiController implements Initializable {
         {
             for (int j = 0; j < nextBrickDataArr[2][i].length; j++)
             {
-                Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
                 rectangle.setFill(getFillColor(nextBrickDataArr[2][i][j]));
                 nextBrickRectangles3[i][j] = rectangle;
                 nextBrickPanel3.add(rectangle, j, i);
@@ -405,7 +404,7 @@ public class GuiController implements Initializable {
 
 
         timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
+                Duration.millis(Constants.FALL_INTERVAL_MS),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
@@ -452,8 +451,8 @@ public class GuiController implements Initializable {
     // uses the game panel vgap and hgap and matchches the cell spacing
 
     private void positionBrickPanel(ViewData brick){
-        double cellWidth = gamePanel.getHgap() + BRICK_SIZE;
-        double cellHeight = gamePanel.getVgap() + BRICK_SIZE;
+        double cellWidth = gamePanel.getHgap() + Constants.BRICK_SIZE;
+        double cellHeight = gamePanel.getVgap() + Constants.BRICK_SIZE;
 
         brickPanel.setLayoutX(gamePanelSceneX.get() + brick.getxPosition() * cellWidth);
         brickPanel.setLayoutY(gamePanelSceneY.get() + brick.getyPosition() * cellHeight);
@@ -510,8 +509,8 @@ public class GuiController implements Initializable {
 
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
-        rectangle.setArcHeight(9);
-        rectangle.setArcWidth(9);
+        rectangle.setArcHeight(Constants.BRICK_ARC);
+        rectangle.setArcWidth(Constants.BRICK_ARC);
     }
 
     private void moveDown(MoveEvent event) {

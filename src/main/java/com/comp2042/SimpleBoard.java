@@ -85,7 +85,7 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(3, -1);
+        currentOffset = new Point(Constants.BRICK_SPAWN_X, Constants.BRICK_SPAWN_Y);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -98,7 +98,7 @@ public class SimpleBoard implements Board {
 
     //obtains the view data for next 3 bricks instead of 1
     public ViewData getViewData() {
-        List<com.comp2042.logic.bricks.Brick> preview = brickGenerator.getNextBricks(3);
+        List<com.comp2042.logic.bricks.Brick> preview = brickGenerator.getNextBricks(Constants.PREVIEW_COUNT);
         int[][][] nextBrickData = new int[preview.size()][][];
         for (int i = 0; i < preview.size(); i++)
         {
