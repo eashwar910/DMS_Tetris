@@ -8,39 +8,22 @@ import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
-
-    //We don't want to instantiate this utility class
     private MatrixOperations(){
 
     }
 
-    public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
+    // rename function for better understanding
+    public static boolean collidesWithBackground(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
                 int targetX = x + i;
                 int targetY = y + j;
-                // added a constraint such that the block can spawn from above the game grid
-                // but the game wont return out of bounds error
-                if (brick[j][i] != 0)
+                int cell = brickCell(brick, i, j);
+
+                // flattened the deep nested loops into a function
+                if (cellCollides(matrix, cell, targetX, targetY))
                 {
-                    if (targetY < 0)
-                    {
-                        // treat off-screen spawn as collision if horizontally out of bounds
-                        // or overlaps filled top row cells
-                        if (targetX < 0 || targetX >= matrix[0].length)
-                        {
-                            return true;
-                        }
-                        if (matrix[0][targetX] != 0)
-                        {
-                            return true;
-                        }
-                        continue;
-                    }
-                    if (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
@@ -48,12 +31,18 @@ public class MatrixOperations {
     }
 
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
-        boolean returnValue = true;
-        // added negative value checking
-        if (targetX >= 0 && targetY >= 0 && targetY < matrix.length && targetX < matrix[targetY].length) {
-            returnValue = false;
+
+        // simplified loops using getHeight and getWidth methods
+        if (targetX < 0 || targetY < 0)
+        {
+            return true;
         }
-        return returnValue;
+
+        if (targetY >= getHeight(matrix))
+        {
+            return true;
+        }
+        return targetX >= getWidth(matrix);
     }
 
     public static int[][] copy(int[][] original) {
@@ -67,32 +56,37 @@ public class MatrixOperations {
         return myInt;
     }
 
-    public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
+    // rename function
+    public static int[][] mergeBrickOntoMatrix(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
                 int targetX = x + i;
                 int targetY = y + j;
-                if (brick[j][i] != 0) {
-                    if (targetY >= 0 && !checkOutOfBound(copy, targetX, targetY))
-                    {
-                        copy[targetY][targetX] = brick[j][i];
-                    }
+                int cell = brickCell(brick, i, j);  // follow through the loop simplification
+                if (cell == 0)
+                {
+                    continue;
+                }
+                if (targetY >= 0 && !checkOutOfBound(copy, targetX, targetY))
+                {
+                    copy[targetY][targetX] = cell;
                 }
             }
         }
         return copy;
     }
 
-    public static ClearRow checkRemoving(final int[][] matrix) {
-        int[][] tmp = new int[matrix.length][matrix[0].length];
+    // rename function
+    public static ClearRow clearFullRows(final int[][] matrix) {
+        int[][] tmp = new int[getHeight(matrix)][getWidth(matrix)];
         Deque<int[]> newRows = new ArrayDeque<>();
         List<Integer> clearedRows = new ArrayList<>();
 
-        for (int i = 0; i < matrix.length; i++) {
-            int[] tmpRow = new int[matrix[i].length];
+        for (int i = 0; i < getHeight(matrix); i++) {
+            int[] tmpRow = new int[getWidth(matrix)];
             boolean rowToClear = true;
-            for (int j = 0; j < matrix[0].length; j++) {
+            for (int j = 0; j < getWidth(matrix); j++) {
                 if (matrix[i][j] == 0) {
                     rowToClear = false;
                 }
@@ -104,7 +98,7 @@ public class MatrixOperations {
                 newRows.add(tmpRow);
             }
         }
-        for (int i = matrix.length - 1; i >= 0; i--) {
+        for (int i = getHeight(matrix) - 1; i >= 0; i--) {
             int[] row = newRows.pollLast();
             if (row != null) {
                 tmp[i] = row;
@@ -118,6 +112,46 @@ public class MatrixOperations {
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
+    }
+
+    private static int getWidth(int[][] matrix) {
+        return matrix.length == 0 ? 0 : matrix[0].length;
+    }
+
+    private static int getHeight(int[][] matrix) {
+        return matrix.length;
+    }
+
+    private static int brickCell(final int[][] brick, int i, int j) {
+        return brick[j][i];
+    }
+
+    // methods have been migrated to this function
+    // simiplifed the nested loops ever further to make code easier to read
+    // used guard calsses to prevent index swapping ccomplications
+    // simplifed matrix.length and matrix[0].length to getheight and getwidth
+    private static boolean cellCollides(final int[][] matrix, int cell, int targetX, int targetY) {
+
+        if (cell == 0)
+        {
+            return false;
+        }
+
+        if (targetY < 0)
+        {
+            return offscreenCollision(matrix, targetX);
+        }
+
+        if (checkOutOfBound(matrix, targetX, targetY))
+        {
+            return true;
+        }
+
+        return matrix[targetY][targetX] != 0;
+    }
+
+    private static boolean offscreenCollision(final int[][] matrix, int targetX) {
+        return targetX < 0 || targetX >= getWidth(matrix) || matrix[0][targetX] != 0;
     }
 
 }
