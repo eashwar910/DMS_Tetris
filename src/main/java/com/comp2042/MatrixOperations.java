@@ -25,6 +25,16 @@ public class MatrixOperations {
                 {
                     if (targetY < 0)
                     {
+                        // treat off-screen spawn as collision if horizontally out of bounds
+                        // or overlaps filled top row cells
+                        if (targetX < 0 || targetX >= matrix[0].length)
+                        {
+                            return true;
+                        }
+                        if (matrix[0][targetX] != 0)
+                        {
+                            return true;
+                        }
                         continue;
                     }
                     if (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)

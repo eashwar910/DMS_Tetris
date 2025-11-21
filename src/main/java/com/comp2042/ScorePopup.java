@@ -8,9 +8,9 @@ import javafx.scene.effect.Effect;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 
-public class NotificationPanel extends BorderPane {
+public class ScorePopup extends BorderPane {
 
-    public NotificationPanel(String text) {
+    public ScorePopup(String text) {
         setMinHeight(200);
         setMinWidth(220);
         final Label score = new Label(text);
@@ -24,7 +24,7 @@ public class NotificationPanel extends BorderPane {
 
     public void showScore(ObservableList<Node> list) {
         ParallelTransition transition = Effects.scorePopupTransition(this); // use the function defined in effects.java
-        transition.setOnFinished(e -> list.remove(NotificationPanel.this));
+        transition.setOnFinished(e -> list.remove(ScorePopup.this));
         transition.play();
     }
 }

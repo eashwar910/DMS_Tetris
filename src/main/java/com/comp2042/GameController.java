@@ -2,7 +2,7 @@ package com.comp2042;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(Constants.BOARD_ROWS, Constants.BOARD_COLS);
+    private Board board = new GameBoard(Constants.BOARD_ROWS, Constants.BOARD_COLS);
 
     private final GuiController viewGuiController;
 

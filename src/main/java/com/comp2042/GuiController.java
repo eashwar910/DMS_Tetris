@@ -39,13 +39,13 @@ public class GuiController implements Initializable {
     private GridPane brickPanel;
 
     @FXML
-    private GameOverPanel gameOverPanel;
+    private GameOverOverlay gameOverPanel;
 
     @FXML
     private Label scoreLabel;
 
     @FXML
-    private PauseScreen pauseScreen;
+    private PauseOverlay pauseScreen;
 
     @FXML
     private AnchorPane groupPause;
@@ -154,7 +154,7 @@ public class GuiController implements Initializable {
             gameOverOverlay.setVisible(false);
         }
 
-        // add the restart/exit handlers to the GameOverPanel
+        // add the restart/exit handlers to the GameOverOverlay
         if (gameOverPanel != null)
         {
             gameOverPanel.setRestartEventHandler(e -> newGame(e));
@@ -476,10 +476,10 @@ public class GuiController implements Initializable {
     }
 
     private void moveDown(MoveEvent event) {
-        if (!isPause.get()) {
+        if (!isPause.get() && !isGameOver.get()) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+                ScorePopup notificationPanel = new ScorePopup("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
@@ -500,10 +500,15 @@ public class GuiController implements Initializable {
     }
 
     public void gameOver() {
-        timeLine.stop();
-        gameOverPanel.setVisible(true);
-        overlayManager.showGameOver(); // show game over screen
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        isPause.set(true);
         isGameOver.set(true);
+        overlayManager.showGameOver();
+        if (gameOverPanel != null) {
+            gameOverPanel.setVisible(true);
+        }
     }
 
     public void newGame(ActionEvent actionEvent) {
