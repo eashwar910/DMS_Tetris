@@ -1,8 +1,8 @@
 package com.comp2042;
 
+import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.event.EventHandler;
 
 public class KeyboardInputManager implements EventHandler<KeyEvent> {
 
@@ -52,6 +52,11 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
         }
         if (keyEvent.getCode() == KeyCode.C) {
             renderer.refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
+            keyEvent.consume();
+        }
+        if (keyEvent.getCode() == KeyCode.SPACE) {
+            DownData downData = eventListener.onHardDropEvent(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
+            renderer.refreshBrick(downData.getViewData());
             keyEvent.consume();
         }
     }

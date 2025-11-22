@@ -12,6 +12,7 @@ public class GameController implements InputEventListener {
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        viewGuiController.bindHighScore(board.getScore().highScoreProperty());
     }
 
     @Override
@@ -67,5 +68,36 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
+    }
+
+
+    @Override
+    public DownData onHardDropEvent(MoveEvent event) { // created method to handle hard drop event
+        int dropped = 0;
+        while (board.moveBrickDown())
+        {
+            dropped++;
+        }
+
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+
+        if (clearRow.getLinesRemoved() > 0)
+        {
+            board.getScore().add(clearRow.getScoreBonus());
+        }
+
+        if (dropped > 0)
+        {
+            board.getScore().add(dropped);
+        }
+
+        if (board.createNewBrick())
+        {
+            viewGuiController.gameOver();
+        }
+
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        return new DownData(clearRow, board.getViewData());
     }
 }

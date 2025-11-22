@@ -75,3 +75,10 @@
     -fx-font-size: 38;
     -fx-text-fill: yellow;
 }
+
+.highscoreClass{
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 30;
+    -fx-text-fill: yellow;
+
+}

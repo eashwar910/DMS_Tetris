@@ -21,6 +21,7 @@ public final class Constants {
     public static final int BRICK_SPAWN_X = 3;
     public static final int BRICK_SPAWN_Y = -3;
     public static final int PREVIEW_COUNT = 3;
+    public static final String HIGHSCORE_FILE = "highscore.txt";
 
     //in Main.java
     public static final int WINDOW_WIDTH = 670;

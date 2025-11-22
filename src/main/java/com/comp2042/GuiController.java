@@ -84,6 +84,9 @@ public class GuiController implements Initializable {
     @FXML
     private javafx.scene.control.Button closeHelpButton;
 
+    @FXML
+    private Label highScoreLabel;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -248,6 +251,12 @@ public class GuiController implements Initializable {
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null && integerProperty != null) {
             scoreLabel.textProperty().bind(Bindings.format("Score: %d", integerProperty));
+        }
+    }
+
+    public void bindHighScore(IntegerProperty integerProperty) {
+        if (highScoreLabel != null && integerProperty != null) {
+            highScoreLabel.textProperty().bind(Bindings.format("High Score: %d", integerProperty));
         }
     }
 

@@ -46,6 +46,8 @@
         </StackPane>
     </VBox>
 
+    <Label fx:id="highScoreLabel" layoutX="25" layoutY="80" styleClass="highscoreClass"/>
+
     <StackPane fx:id="gameOverOverlay" style="-fx-background-color: rgba(0,0,0,0.6);">
         <GameOverOverlay fx:id="gameOverPanel"/>
     </StackPane>
@@ -65,6 +67,7 @@
             <Label text="Left/Right: Arrow keys or A/D" styleClass="helpInfo" />
             <Label text="Rotate: Up Arrow or W" styleClass="helpInfo" />
             <Label text="Soft drop: Down Arrow or S" styleClass="helpInfo" />
+            <Label text="Hard drop: Space" styleClass="helpInfo" />
             <Label text="Hold: C" styleClass="helpInfo" />
             <Label text="Pause/Resume: Esc" styleClass="helpInfo" />
             <Label text="New game: N" styleClass="helpInfo" />
