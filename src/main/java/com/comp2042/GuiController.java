@@ -2,6 +2,8 @@ package com.comp2042;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -21,7 +23,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-import javafx.animation.Animation;
 
 public class GuiController implements Initializable {
 
@@ -40,7 +41,7 @@ public class GuiController implements Initializable {
     private GameOverOverlay gameOverPanel;
 
     @FXML
-    private Label scoreLabel;
+    private Label scoreValueLabel;
 
     @FXML
     private PauseOverlay pauseScreen;
@@ -85,7 +86,7 @@ public class GuiController implements Initializable {
     private javafx.scene.control.Button closeHelpButton;
 
     @FXML
-    private Label highScoreLabel;
+    private Label highScoreValueLabel;
 
     private InputEventListener eventListener;
 
@@ -109,6 +110,17 @@ public class GuiController implements Initializable {
 
         // initialize renderer
         gameRenderer = new GameRenderer(gamePanel, brickPanel, nextBrickPanel1, nextBrickPanel2, nextBrickPanel3, holdBrickPanel, gamePanelSceneX, gamePanelSceneY);
+
+        // using grid.png as the background for playing area
+        gamePanel.setBackground(new javafx.scene.layout.Background(
+                new javafx.scene.layout.BackgroundImage(
+                        new javafx.scene.image.Image(new java.io.File("grid.png").toURI().toString(), false),
+                        javafx.scene.layout.BackgroundRepeat.REPEAT,
+                        javafx.scene.layout.BackgroundRepeat.REPEAT,
+                        javafx.scene.layout.BackgroundPosition.DEFAULT,
+                        javafx.scene.layout.BackgroundSize.DEFAULT
+                )
+        ));
 
         Font.loadFont(getClass().getClassLoader().getResource(Constants.FONT_DIGITAL).toExternalForm(), Constants.FONT_SIZE);
         gamePanel.setFocusTraversable(true);
@@ -249,14 +261,14 @@ public class GuiController implements Initializable {
     }
 
     public void bindScore(IntegerProperty integerProperty) {
-        if (scoreLabel != null && integerProperty != null) {
-            scoreLabel.textProperty().bind(Bindings.format("Score: %d", integerProperty));
+        if (scoreValueLabel != null && integerProperty != null) {
+            scoreValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
         }
     }
 
     public void bindHighScore(IntegerProperty integerProperty) {
-        if (highScoreLabel != null && integerProperty != null) {
-            highScoreLabel.textProperty().bind(Bindings.format("High Score: %d", integerProperty));
+        if (highScoreValueLabel != null && integerProperty != null) {
+            highScoreValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
         }
     }
 

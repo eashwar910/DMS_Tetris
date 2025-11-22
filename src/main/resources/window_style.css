@@ -70,15 +70,18 @@
                 dropshadow(gaussian, rgba(255,0,0,0.4), 4, 0.9, 0, 0);   /* reference - https://stackoverflow.com/questions/37886662/java-fx-glow-effect-in-css */
 }
 
-.scoreClass{
+.scoreTitleClass{
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 38;
+    -fx-font-size: 24;
     -fx-text-fill: yellow;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
 }
 
-.highscoreClass{
+.scoreValueClass{
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 30;
-    -fx-text-fill: yellow;
-
+    -fx-font-size: 28;
+    -fx-text-fill: #3aa6ff;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
 }

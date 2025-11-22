@@ -14,7 +14,7 @@
     <StackPane fx:id = "gameBoardContainer">
         <BorderPane styleClass="gameBoard" fx:id="gameBoard">
             <center>
-                <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="95" layoutX="40"/>
+                <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
             </center>
         </BorderPane>
     </StackPane>
@@ -26,7 +26,10 @@
     </AnchorPane>
 
 
-    <Label fx:id="scoreLabel" layoutX="465" layoutY="80" styleClass="scoreClass"/>
+    <VBox layoutX="465" layoutY="80" alignment="CENTER">
+        <Label text="SCORE" styleClass="scoreTitleClass" />
+        <Label fx:id="scoreValueLabel" styleClass="scoreValueClass" />
+    </VBox>
 
     <VBox layoutX="465" layoutY="140">
         <Label text="Next" styleClass="nextBrickLabel" />
@@ -46,7 +49,10 @@
         </StackPane>
     </VBox>
 
-    <Label fx:id="highScoreLabel" layoutX="25" layoutY="80" styleClass="highscoreClass"/>
+    <VBox layoutX="25" layoutY="80" alignment="CENTER">
+        <Label text="HIGH SCORE" styleClass="scoreTitleClass" />
+        <Label fx:id="highScoreValueLabel" styleClass="scoreValueClass" />
+    </VBox>
 
     <StackPane fx:id="gameOverOverlay" style="-fx-background-color: rgba(0,0,0,0.6);">
         <GameOverOverlay fx:id="gameOverPanel"/>
