@@ -39,6 +39,13 @@
         </StackPane>
     </VBox>
 
+    <VBox layoutX="65" layoutY="140">
+        <Label text="Hold" styleClass="nextBrickLabel" />
+        <StackPane styleClass="nextBrick" prefWidth="140" prefHeight="120">
+            <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
+        </StackPane>
+    </VBox>
+
     <StackPane fx:id="gameOverOverlay" style="-fx-background-color: rgba(0,0,0,0.6);">
         <GameOverOverlay fx:id="gameOverPanel"/>
     </StackPane>
@@ -55,10 +62,12 @@
     <AnchorPane fx:id="helpOverlay" layoutX="0" layoutY="0" style="-fx-background-color: rgba(0,0,0,1);" visible="false">
         <VBox alignment="CENTER" spacing="8" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
             <Label text="Controls" styleClass="nextBrickLabel" />
-            <Label text="Left/Right: Arrow keys" styleClass="helpInfo" />
-            <Label text="Rotate: Up Arrow" styleClass="helpInfo" />
-            <Label text="Soft drop: Down Arrow" styleClass="helpInfo" />
+            <Label text="Left/Right: Arrow keys or A/D" styleClass="helpInfo" />
+            <Label text="Rotate: Up Arrow or W" styleClass="helpInfo" />
+            <Label text="Soft drop: Down Arrow or S" styleClass="helpInfo" />
+            <Label text="Hold: C" styleClass="helpInfo" />
             <Label text="Pause/Resume: Esc" styleClass="helpInfo" />
+            <Label text="New game: N" styleClass="helpInfo" />
             <Button fx:id="closeHelpButton" text="Close" styleClass="ipad-dark-grey" />
         </VBox>
 

@@ -64,6 +64,9 @@ public class GuiController implements Initializable {
     private GridPane nextBrickPanel3;
 
     @FXML
+    private GridPane holdBrickPanel;
+
+    @FXML
     private javafx.scene.layout.StackPane gameOverOverlay;
 
     @FXML
@@ -102,7 +105,7 @@ public class GuiController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         // initialize renderer
-        gameRenderer = new GameRenderer(gamePanel, brickPanel, nextBrickPanel1, nextBrickPanel2, nextBrickPanel3, gamePanelSceneX, gamePanelSceneY);
+        gameRenderer = new GameRenderer(gamePanel, brickPanel, nextBrickPanel1, nextBrickPanel2, nextBrickPanel3, holdBrickPanel, gamePanelSceneX, gamePanelSceneY);
 
         Font.loadFont(getClass().getClassLoader().getResource(Constants.FONT_DIGITAL).toExternalForm(), Constants.FONT_SIZE);
         gamePanel.setFocusTraversable(true);

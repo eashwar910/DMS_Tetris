@@ -14,6 +14,7 @@ public class GameRenderer {
     private final GridPane nextBrickPanel1;
     private final GridPane nextBrickPanel2;
     private final GridPane nextBrickPanel3;
+    private final GridPane holdBrickPanel;
 
     private final DoubleProperty gamePanelSceneX;
     private final DoubleProperty gamePanelSceneY;
@@ -23,10 +24,11 @@ public class GameRenderer {
     Rectangle[][] nextBrickRectangles1;
     Rectangle[][] nextBrickRectangles2;
     Rectangle[][] nextBrickRectangles3;
+    Rectangle[][] holdBrickRectangles;
 
     // game renderer definition
     public GameRenderer(GridPane gamePanel, GridPane brickPanel,
-                        GridPane nextBrickPanel1, GridPane nextBrickPanel2, GridPane nextBrickPanel3,
+                        GridPane nextBrickPanel1, GridPane nextBrickPanel2, GridPane nextBrickPanel3, GridPane holdBrickPanel,
                         DoubleProperty gamePanelSceneX, DoubleProperty gamePanelSceneY) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
@@ -35,6 +37,7 @@ public class GameRenderer {
         this.nextBrickPanel3 = nextBrickPanel3;
         this.gamePanelSceneX = gamePanelSceneX;
         this.gamePanelSceneY = gamePanelSceneY;
+        this.holdBrickPanel = holdBrickPanel;
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -98,6 +101,19 @@ public class GameRenderer {
             }
         }
 
+        int[][] holdData = brick.getHoldBrickData();
+        holdBrickRectangles = new Rectangle[holdData.length][holdData[0].length];
+        for (int i = 0; i < holdData.length; i++)
+        {
+            for (int j = 0; j < holdData[i].length; j++)
+            {
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
+                rectangle.setFill(getFillColor(holdData[i][j]));
+                holdBrickRectangles[i][j] = rectangle;
+                holdBrickPanel.add(rectangle, j, i);
+            }
+        }
+
         // position the brick after scene is laid out
         Platform.runLater(() -> {
             positionBrickPanel(brick);
@@ -156,6 +172,13 @@ public class GameRenderer {
         for (int i = 0; i < nextBrickDataArr[2].length; i++) {
             for (int j = 0; j < nextBrickDataArr[2][i].length; j++) {
                 setRectangleData(nextBrickDataArr[2][i][j], nextBrickRectangles3[i][j]);
+            }
+        }
+
+        int[][] holdData = brick.getHoldBrickData();
+        for (int i = 0; i < holdData.length; i++) {
+            for (int j = 0; j < holdData[i].length; j++) {
+                setRectangleData(holdData[i][j], holdBrickRectangles[i][j]);
             }
         }
     }

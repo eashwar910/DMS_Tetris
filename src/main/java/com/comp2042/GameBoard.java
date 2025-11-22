@@ -14,6 +14,8 @@ public class GameBoard implements Board {
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
+    private com.comp2042.logic.bricks.Brick heldBrick;
+    private boolean holdUsed;
 
     public GameBoard(int width, int height) {
         this.width = width;
@@ -81,10 +83,53 @@ public class GameBoard implements Board {
     }
 
     @Override
+    public boolean holdBrick() {
+
+        // hold can one hold one block and swap
+        if (holdUsed)
+        {
+            return false;
+        }
+        com.comp2042.logic.bricks.Brick previousCurrent = brickRotator.getBrick();
+        com.comp2042.logic.bricks.Brick previousHeld = heldBrick;
+        Point previousOffset = new Point(currentOffset);
+
+        // no brick in hold panel, so add the brick and spawn new one
+        if (heldBrick == null)
+        {
+            heldBrick = previousCurrent;
+            com.comp2042.logic.bricks.Brick newBrick = brickGenerator.getBrick();
+            brickRotator.setBrick(newBrick);
+        }
+
+        // if brick already in hold panel, swap
+        else
+        {
+            brickRotator.setBrick(heldBrick);
+            heldBrick = previousCurrent;
+        }
+
+        currentOffset = new Point(Constants.BRICK_SPAWN_X, Constants.BRICK_SPAWN_Y);
+        boolean conflict = MatrixOperations.collidesWithBackground(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+
+        // collision error handling
+        if (conflict)
+        {
+            brickRotator.setBrick(previousCurrent);
+            heldBrick = previousHeld;
+            currentOffset = previousOffset;
+            return false;
+        }
+        holdUsed = true;
+        return true;
+    }
+
+    @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(Constants.BRICK_SPAWN_X, Constants.BRICK_SPAWN_Y);
+        holdUsed = false;
         return MatrixOperations.collidesWithBackground(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -103,7 +148,13 @@ public class GameBoard implements Board {
         {
             nextBrickData[i] = preview.get(i).getShapeMatrix().get(0);
         }
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBrickData);
+        int[][] holdData;
+        if (heldBrick != null) {
+            holdData = heldBrick.getShapeMatrix().get(0);
+        } else {
+            holdData = new int[4][4];
+        }
+        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBrickData, holdData);
     }
 
     @Override

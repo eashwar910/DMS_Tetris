@@ -10,6 +10,8 @@ public interface Board {
 
     boolean rotateLeftBrick();
 
+    boolean holdBrick();
+
     boolean createNewBrick();
 
     int[][] getBoardMatrix();

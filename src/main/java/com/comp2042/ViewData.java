@@ -6,12 +6,14 @@ public final class ViewData {
     private final int xPosition;
     private final int yPosition;
     private final int[][][] nextBrickData;  //updated to hold 3 next bricks
+    private final int[][] holdBrickData; // only brick can be help and swapped so 2d array
 
-    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][][] nextBrickData) {
+    public ViewData(int[][] brickData, int xPosition, int yPosition, int[][][] nextBrickData, int[][] holdBrickData) {
         this.brickData = brickData;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.nextBrickData = nextBrickData;
+        this.holdBrickData = holdBrickData;
     }
 
     public int[][] getBrickData() {
@@ -37,5 +39,10 @@ public final class ViewData {
         }
         return copy;
 
+    }
+
+    public int[][] getHoldBrickData() {
+
+        return MatrixOperations.copy(holdBrickData);
     }
 }

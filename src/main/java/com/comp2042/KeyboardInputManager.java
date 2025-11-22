@@ -50,5 +50,9 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
             controller.moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
             keyEvent.consume();
         }
+        if (keyEvent.getCode() == KeyCode.C) {
+            renderer.refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
+            keyEvent.consume();
+        }
     }
 }
