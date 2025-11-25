@@ -97,6 +97,12 @@ public class GuiController implements Initializable {
     @FXML
     private Label highScoreValueLabel;
 
+    @FXML
+    private DynamicStartScreen dynamicStartScreen;
+
+    @FXML
+    private javafx.scene.image.ImageView titleImage;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
@@ -142,6 +148,15 @@ public class GuiController implements Initializable {
         // setup overlays using method from new class
         setupOverlays();
 
+        // used a title logo image found online, added it to fxml file using imageview
+        // bind title image property to start overlay
+        if (titleImage != null && startOverlay != null)
+        {
+            titleImage.fitWidthProperty().bind(startOverlay.widthProperty().multiply(0.6));
+            titleImage.setSmooth(true);
+            titleImage.setCache(true);
+        }
+
         SceneManager.centerGameBoard(gameBoardContainer, gameBoard, gamePanel, gamePanelSceneX, gamePanelSceneY);
 
         final Reflection reflection = Effects.createBoardReflection();
@@ -171,6 +186,10 @@ public class GuiController implements Initializable {
             isPause.set(true);
             overlayManager.bindOverlayFill(startOverlay);
             overlayManager.showStart();
+            if (dynamicStartScreen != null)
+            {
+                dynamicStartScreen.start();
+            }
         }
 
         if (playButton != null) playButton.setOnAction(e -> startGame());
@@ -309,7 +328,12 @@ public class GuiController implements Initializable {
     }
 
     private void startGame() {
-        if (startOverlay != null) overlayManager.hideStart();
+        if (startOverlay != null)
+        {
+            overlayManager.hideStart();
+            if (dynamicStartScreen != null) dynamicStartScreen.stop();
+        }
+
         overlayManager.hideHelp();
         if (timeLine != null) timeLine.play();
         isPause.set(false);

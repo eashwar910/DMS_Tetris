@@ -5,6 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <?import com.comp2042.ui.PauseOverlay?>
+<?import com.comp2042.ui.DynamicStartScreen?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
 
 <Pane fx:controller="com.comp2042.ui.GuiController"
       xmlns:fx="http://javafx.com/fxml">
@@ -59,8 +63,13 @@
     </StackPane>
 
     <AnchorPane fx:id="startOverlay" layoutX="0" layoutY="0" style="-fx-background-color: rgba(0,0,0,1);">
+        <DynamicStartScreen fx:id = "dynamicStartScreen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0"/>
         <VBox alignment="CENTER" spacing="16" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
-            <Label text="TETRIS" styleClass="titleClass" />
+            <ImageView fx:id="titleImage" preserveRatio="true">
+                <image>
+                    <Image url="@title_text.png"/>
+                </image>
+            </ImageView>
             <Button fx:id="playButton" text="Play" styleClass="ipad-dark-grey" prefWidth="240" />
             <Button fx:id="helpButton" text="Help" styleClass="ipad-dark-grey" prefWidth="240" />
         </VBox>
