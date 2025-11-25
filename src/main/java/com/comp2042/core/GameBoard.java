@@ -78,13 +78,22 @@ public class GameBoard implements Board {
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.getNextShape();
-        boolean conflict = MatrixOperations.collidesWithBackground(currentMatrix, nextShape.getShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
-        if (conflict) {
-            return false;
-        } else {
+        int x = (int) currentOffset.getX();
+        int y = (int) currentOffset.getY();
+        if (!MatrixOperations.collidesWithBackground(currentMatrix, nextShape.getShape(), x, y)) {
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
+        int[] kicks = new int[]{-1, 1, -2, 2};
+        for (int dx : kicks) {
+            int nx = x + dx;
+            if (!MatrixOperations.collidesWithBackground(currentMatrix, nextShape.getShape(), nx, y)) {
+                brickRotator.setCurrentShape(nextShape.getPosition());
+                currentOffset = new Point(nx, y);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
