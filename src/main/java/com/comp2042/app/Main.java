@@ -1,7 +1,10 @@
-package com.comp2042;
+package com.comp2042.app;
 
 import java.net.URL;
 
+import com.comp2042.core.Constants;
+import com.comp2042.core.GameController;
+import com.comp2042.ui.GuiController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

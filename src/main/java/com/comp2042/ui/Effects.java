@@ -1,6 +1,7 @@
 // src/main/java/com/comp2042/Effects.java
-package com.comp2042;
+package com.comp2042.ui;
 
+import com.comp2042.core.Constants;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;

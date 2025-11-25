@@ -1,8 +1,17 @@
-package com.comp2042;
+package com.comp2042.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.comp2042.core.Constants;
+import com.comp2042.events.EventSource;
+import com.comp2042.events.EventType;
+import com.comp2042.events.MoveEvent;
+import com.comp2042.input.InputEventListener;
+import com.comp2042.input.KeyboardInputManager;
+import com.comp2042.logic.workflow.ClearRow;
+import com.comp2042.logic.workflow.DownData;
+import com.comp2042.logic.workflow.ViewData;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -218,16 +227,19 @@ public class GuiController implements Initializable {
         if (isPlaying())
         {
             DownData downData = eventListener.onDownEvent(event);
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0)
-            {
-                ScorePopup notificationPanel = new ScorePopup("+" + downData.getClearRow().getScoreBonus());
-                groupNotification.getChildren().add(notificationPanel);
-                notificationPanel.showScore(groupNotification.getChildren());
-            }
+            showScorePopup(downData.getClearRow());
             // direct access to renderer because of sonar cube warning
             gameRenderer.refreshBrick(downData.getViewData());
         }
         gamePanel.requestFocus();
+    }
+
+    public void showScorePopup(ClearRow clearRow) {
+        if (clearRow != null && clearRow.getLinesRemoved() > 0) {
+            ScorePopup notificationPanel = new ScorePopup("+" + clearRow.getScoreBonus());
+            groupNotification.getChildren().add(notificationPanel);
+            notificationPanel.showScore(groupNotification.getChildren());
+        }
     }
 
     public void togglePause() {

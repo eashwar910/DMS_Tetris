@@ -1,5 +1,11 @@
-package com.comp2042;
+package com.comp2042.input;
 
+import com.comp2042.logic.workflow.DownData;
+import com.comp2042.ui.GameRenderer;
+import com.comp2042.ui.GuiController;
+import com.comp2042.events.EventSource;
+import com.comp2042.events.EventType;
+import com.comp2042.events.MoveEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -57,6 +63,7 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
         if (keyEvent.getCode() == KeyCode.SPACE) {
             DownData downData = eventListener.onHardDropEvent(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
             renderer.refreshBrick(downData.getViewData());
+            controller.showScorePopup(downData.getClearRow());
             keyEvent.consume();
         }
     }

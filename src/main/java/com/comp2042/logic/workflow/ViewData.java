@@ -1,4 +1,6 @@
-package com.comp2042;
+package com.comp2042.logic.workflow;
+
+import com.comp2042.core.MatrixOperations;
 
 public final class ViewData {
 

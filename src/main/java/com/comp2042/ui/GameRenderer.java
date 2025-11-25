@@ -1,5 +1,7 @@
-package com.comp2042;
+package com.comp2042.ui;
 
+import com.comp2042.logic.workflow.ViewData;
+import com.comp2042.core.Constants;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.GridPane;

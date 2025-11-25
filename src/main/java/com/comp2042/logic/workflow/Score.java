@@ -1,5 +1,6 @@
-package com.comp2042;
+package com.comp2042.logic.workflow;
 
+import com.comp2042.core.Constants;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import java.io.IOException;

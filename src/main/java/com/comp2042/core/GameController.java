@@ -1,4 +1,12 @@
-package com.comp2042;
+package com.comp2042.core;
+
+import com.comp2042.events.EventSource;
+import com.comp2042.events.MoveEvent;
+import com.comp2042.input.InputEventListener;
+import com.comp2042.logic.workflow.ClearRow;
+import com.comp2042.logic.workflow.DownData;
+import com.comp2042.logic.workflow.ViewData;
+import com.comp2042.ui.GuiController;
 
 public class GameController implements InputEventListener {
 

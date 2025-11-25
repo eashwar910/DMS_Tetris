@@ -1,5 +1,5 @@
 // src/main/java/com/comp2042/Constants.java
-package com.comp2042;
+package com.comp2042.core;
 
 public final class Constants {
     

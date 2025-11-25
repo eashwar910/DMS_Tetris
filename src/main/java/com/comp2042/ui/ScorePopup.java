@@ -1,5 +1,6 @@
-package com.comp2042;
+package com.comp2042.ui;
 
+import com.comp2042.core.Constants;
 import javafx.animation.ParallelTransition;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;

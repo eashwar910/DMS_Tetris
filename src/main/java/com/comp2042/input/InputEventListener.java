@@ -1,4 +1,8 @@
-package com.comp2042;
+package com.comp2042.input;
+
+import com.comp2042.logic.workflow.DownData;
+import com.comp2042.logic.workflow.ViewData;
+import com.comp2042.events.MoveEvent;
 
 public interface InputEventListener {
 
