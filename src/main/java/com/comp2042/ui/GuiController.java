@@ -303,12 +303,23 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void gameOver() {
+    public void gameOver(boolean newHighScore) {
         if (timeLine != null) timeLine.stop();
         isPause.set(true);
         isGameOver.set(true);
         overlayManager.showGameOver();
-        if (gameOverPanel != null) gameOverPanel.setVisible(true);
+        if (gameOverPanel != null) {
+            if (newHighScore) {
+                gameOverPanel.setHighScoreMode();
+                gameOverPanel.setRestartEventHandler(this::newGame);
+                gameOverPanel.setExitEventHandler(e -> goToMainMenu());
+            } else {
+                gameOverPanel.setDefaultMode();
+                gameOverPanel.setRestartEventHandler(this::newGame);
+                gameOverPanel.setExitEventHandler(e -> quitGame());
+            }
+            gameOverPanel.setVisible(true);
+        }
     }
 
     public void newGame(ActionEvent actionEvent) {
@@ -348,4 +359,15 @@ public class GuiController implements Initializable {
     }
 
     private void quitGame() { Platform.exit(); }
+
+    // go to main menu button method
+    private void goToMainMenu() {
+        overlayManager.hideGameOver();
+        if (startOverlay != null) {
+            overlayManager.showStart();
+            isPause.set(true);
+            if (timeLine != null) timeLine.pause();
+            if (dynamicStartScreen != null) dynamicStartScreen.start();
+        }
+    }
 }

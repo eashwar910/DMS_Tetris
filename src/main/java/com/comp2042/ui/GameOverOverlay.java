@@ -10,14 +10,15 @@ import javafx.scene.layout.VBox;
 
 public class GameOverOverlay extends BorderPane {
 
-    private Button restartButton;
-    private Button exitButton;
+    private final Label messageLabel;
+    private final Button restartButton;
+    private final Button exitButton;
     private EventHandler<ActionEvent> restartEventHandler;
     private EventHandler<ActionEvent> exitEventHandler;
 
     public GameOverOverlay() {
-        final Label gameOverLabel = new Label("GAME OVER");
-        gameOverLabel.getStyleClass().add("gameOverStyle");
+        messageLabel = new Label("GAME OVER");
+        messageLabel.getStyleClass().add("gameOverStyle");
 
         // setting up the restart button on the game over panel
         restartButton = new Button("RESTART");
@@ -46,7 +47,7 @@ public class GameOverOverlay extends BorderPane {
         // create Vbox to align the buttons with game over text
         VBox box = new VBox(20);
         box.setStyle("-fx-alignment: center;");
-        box.getChildren().addAll(gameOverLabel, restartButton, exitButton);
+        box.getChildren().addAll(messageLabel, restartButton, exitButton);
         setCenter(box);
 
     }
@@ -58,6 +59,27 @@ public class GameOverOverlay extends BorderPane {
 
     public void setExitEventHandler(EventHandler<ActionEvent> handler) {
         this.exitEventHandler = handler;
+    }
+
+    // two modes for the game over overlay
+    public void setHighScoreMode() {
+        messageLabel.setText("NEW HIGH SCORE !!");
+        messageLabel.getStyleClass().remove("gameOverStyle");
+        if (!messageLabel.getStyleClass().contains("newHighScoreStyle")) {
+            messageLabel.getStyleClass().add("newHighScoreStyle");
+        }
+        restartButton.setText("NEW GAME");
+        exitButton.setText("MAIN MENU");
+    }
+
+    public void setDefaultMode() {
+        messageLabel.setText("GAME OVER");
+        messageLabel.getStyleClass().remove("newHighScoreStyle");
+        if (!messageLabel.getStyleClass().contains("gameOverStyle")) {
+            messageLabel.getStyleClass().add("gameOverStyle");
+        }
+        restartButton.setText("RESTART");
+        exitButton.setText("EXIT");
     }
 
 

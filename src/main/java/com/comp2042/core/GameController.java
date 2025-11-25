@@ -34,7 +34,9 @@ public class GameController implements InputEventListener {
                 board.getScore().add(clearRow.getScoreBonus());
             }
             if (board.createNewBrick()) {
-                viewGuiController.gameOver();
+                boolean newHigh = board.getScore().scoreProperty().get() > 0 &&
+                        board.getScore().scoreProperty().get() == board.getScore().highScoreProperty().get();
+                viewGuiController.gameOver(newHigh);
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
@@ -102,7 +104,9 @@ public class GameController implements InputEventListener {
 
         if (board.createNewBrick())
         {
-            viewGuiController.gameOver();
+            boolean newHigh = board.getScore().scoreProperty().get() > 0 &&
+                    board.getScore().scoreProperty().get() == board.getScore().highScoreProperty().get();
+            viewGuiController.gameOver(newHigh);
         }
 
         viewGuiController.refreshGameBackground(board.getBoardMatrix());

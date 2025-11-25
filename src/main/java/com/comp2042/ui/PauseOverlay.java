@@ -1,12 +1,12 @@
 package com.comp2042.ui;
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.control.Button;
-import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 
 public class PauseOverlay extends BorderPane {
