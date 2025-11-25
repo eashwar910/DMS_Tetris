@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Collections;
 
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
-
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
     public RandomBrickGenerator() {
@@ -21,14 +21,30 @@ public class RandomBrickGenerator implements BrickGenerator {
         brickList.add(new SBrick());
         brickList.add(new TBrick());
         brickList.add(new ZBrick());
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        refillBag();
+    }
+
+    public void reset() {
+        nextBricks.clear();
+        refillBag();
+    }
+
+    // using the famous 7 bag system
+    // this way blocks dont repeat very often and one of the 7 different bricks comes
+    // before each brick is repeated
+    private void refillBag() {
+        List<Brick> bag = new ArrayList<>(brickList);
+        Collections.shuffle(bag, ThreadLocalRandom.current());
+        for (Brick b : bag)
+        {
+            nextBricks.add(b);
+        }
     }
 
     @Override
     public Brick getBrick() {
         if (nextBricks.size() <= 1) {
-            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+            refillBag();
         }
         return nextBricks.poll();
     }
@@ -42,9 +58,9 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     // instead of giving the next one brick, it returns the next "count" bricks
     public java.util.List<Brick> getNextBricks(int count) {
-        while (nextBricks.size() < count)
+        if (nextBricks.size() < count)
         {
-            nextBricks.add(brickList.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(brickList.size())));
+            refillBag();
         }
         java.util.List<Brick> result = new java.util.ArrayList<>(count);
         int i = 0;

@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.ui;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.VBox;
 
 
-public class PauseScreen extends BorderPane {
+public class PauseOverlay extends BorderPane {
 
     private Button resumeButton;
     private Button quitButton;
@@ -19,7 +19,7 @@ public class PauseScreen extends BorderPane {
     private EventHandler<ActionEvent> newgameHandler;
 
 
-    public PauseScreen() {
+    public PauseOverlay() {
 
         // Creating the Pause Menu Box (improvise further later)
         Rectangle background = new Rectangle();

@@ -1,4 +1,4 @@
-package com.comp2042;
+package com.comp2042.ui;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -8,14 +8,14 @@ import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
 
 
-public class GameOverPanel extends BorderPane {
+public class GameOverOverlay extends BorderPane {
 
     private Button restartButton;
     private Button exitButton;
     private EventHandler<ActionEvent> restartEventHandler;
     private EventHandler<ActionEvent> exitEventHandler;
 
-    public GameOverPanel() {
+    public GameOverOverlay() {
         final Label gameOverLabel = new Label("GAME OVER");
         gameOverLabel.getStyleClass().add("gameOverStyle");
 

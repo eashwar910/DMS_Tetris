@@ -1,8 +1,16 @@
-package com.comp2042;
+package com.comp2042.core;
+
+import com.comp2042.events.EventSource;
+import com.comp2042.events.MoveEvent;
+import com.comp2042.input.InputEventListener;
+import com.comp2042.logic.workflow.ClearRow;
+import com.comp2042.logic.workflow.DownData;
+import com.comp2042.logic.workflow.ViewData;
+import com.comp2042.ui.GuiController;
 
 public class GameController implements InputEventListener {
 
-    private Board board = new SimpleBoard(20, 10);
+    private Board board = new GameBoard(Constants.BOARD_ROWS, Constants.BOARD_COLS);
 
     private final GuiController viewGuiController;
 
@@ -12,6 +20,7 @@ public class GameController implements InputEventListener {
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        viewGuiController.bindHighScore(board.getScore().highScoreProperty());
     }
 
     @Override
@@ -56,10 +65,47 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
+    @Override
+    public ViewData onHoldEvent(MoveEvent event) {
+        board.holdBrick();
+        return board.getViewData();
+    }
+
 
     @Override
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
+    }
+
+
+    @Override
+    public DownData onHardDropEvent(MoveEvent event) { // created method to handle hard drop event
+        int dropped = 0;
+        while (board.moveBrickDown())
+        {
+            dropped++;
+        }
+
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+
+        if (clearRow.getLinesRemoved() > 0)
+        {
+            board.getScore().add(clearRow.getScoreBonus());
+        }
+
+        if (dropped > 0)
+        {
+            board.getScore().add(dropped);
+        }
+
+        if (board.createNewBrick())
+        {
+            viewGuiController.gameOver();
+        }
+
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        return new DownData(clearRow, board.getViewData());
     }
 }
