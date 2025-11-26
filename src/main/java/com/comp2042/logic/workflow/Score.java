@@ -1,17 +1,21 @@
 package com.comp2042.logic.workflow;
 
-import com.comp2042.core.Constants;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.comp2042.core.Constants;
+
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public final class Score {
 
     private final IntegerProperty score = new SimpleIntegerProperty(0);
     private final IntegerProperty highScore = new SimpleIntegerProperty(0);
+    private final IntegerProperty linesCleared = new SimpleIntegerProperty(0);
+    private final IntegerProperty level = new SimpleIntegerProperty(1);
 
     public Score() {
         loadHighScore();
@@ -23,6 +27,14 @@ public final class Score {
 
     public IntegerProperty highScoreProperty() {
         return highScore;
+    }
+
+    public IntegerProperty levelProperty() {
+        return level;
+    }
+
+    public IntegerProperty linesClearedProperty() {
+        return linesCleared;
     }
 
     public void add(int i){
@@ -38,6 +50,17 @@ public final class Score {
 
     public void reset() {
         score.setValue(0);
+        linesCleared.setValue(0);
+        level.setValue(1);
+    }
+
+    public void addLines(int lines) {
+        if (lines <= 0) return;
+
+        int total = linesCleared.get() + lines;
+        linesCleared.set(total);
+        int newLevel = 1 + (total / Constants.LINES_PER_LEVEL);
+        if (newLevel != level.get()) level.set(newLevel);
     }
 
     // load high score from the .txt file

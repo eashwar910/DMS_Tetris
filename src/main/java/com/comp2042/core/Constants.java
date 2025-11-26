@@ -12,6 +12,10 @@ public final class Constants {
     public static final double REFLECTION_TOP_OFFSET = 10.0;
     public static final String FONT_DIGITAL = "digital.ttf";
     public static final double FONT_SIZE = 38.0;
+    public static final int LINES_PER_LEVEL = 10;
+    public static final double BASE_TIME = 0.9;
+    public static final double TIME_DECREMENT = 0.007;
+    public static final double MIN_FALL_INTERVAL_MS = 50.0;
 
     //GameController.java
     public static final int BOARD_ROWS = 20;

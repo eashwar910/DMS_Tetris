@@ -12,6 +12,7 @@ import com.comp2042.input.KeyboardInputManager;
 import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -100,6 +101,12 @@ public class GuiController implements Initializable {
 
     @FXML
     private javafx.scene.image.ImageView titleImage;
+
+    @FXML
+    private Label linesValueLabel;
+
+    @FXML
+    private Label levelValueLabel;
 
     private InputEventListener eventListener;
 
@@ -233,6 +240,18 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void bindLinesCleared(IntegerProperty integerProperty) {
+        if (linesValueLabel != null && integerProperty != null) {
+            linesValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
+        }
+    }
+
+    public void bindLevelValue(IntegerProperty integerProperty) {
+        if (levelValueLabel != null && integerProperty != null) {
+            levelValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
+        }
+    }
+
     // full method moved to overlay manager
     public void gameOver(boolean newHighScore) { overlayManager.gameOver(newHighScore); }
 
@@ -243,5 +262,40 @@ public class GuiController implements Initializable {
     public AnchorPane getStartOverlay() { return startOverlay; }
     public BooleanProperty getIsPause() { return isPause; }
     public BooleanProperty getIsGameOver() { return isGameOver; }
+
+    public void bindLevel(IntegerProperty integerProperty) {
+        if (integerProperty == null) return;
+        integerProperty.addListener((obs, oldVal, newVal) -> updateFallInterval(newVal.intValue()));
+        updateFallInterval(integerProperty.get());
+    }
+
+    private void updateFallInterval(int level) {
+        double ms;
+        if (level <= 1)
+        {
+            ms = Constants.FALL_INTERVAL_MS;
+        }
+        else
+        {
+            double base = Constants.BASE_TIME;
+            double dec = Constants.TIME_DECREMENT;
+            double t = Math.pow(Math.max(0.0, base - ((level - 1) * dec)), Math.max(0, level - 1));
+            ms = Math.max(Constants.MIN_FALL_INTERVAL_MS, t * 1000.0);
+        }
+        boolean wasRunning = timeLine != null && timeLine.getStatus() == Animation.Status.RUNNING;
+        if (timeLine != null)
+        {
+            timeLine.stop();
+            timeLine.getKeyFrames().setAll(new KeyFrame(
+                    Duration.millis(ms),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.setCycleCount(Animation.INDEFINITE);
+            if (wasRunning && !isPause.get() && !isGameOver.get())
+            {
+                timeLine.play();
+            }
+        }
+    }
     
 }

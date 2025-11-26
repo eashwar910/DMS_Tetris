@@ -46,11 +46,15 @@
         </StackPane>
     </VBox>
 
-    <VBox layoutX="65" layoutY="140">
+    <VBox layoutX="49" layoutY="140" spacing="8">
         <Label text="Hold" styleClass="nextBrickLabel" />
         <StackPane styleClass="nextBrick" prefWidth="140" prefHeight="120">
             <GridPane fx:id="holdBrickPanel" vgap="1" hgap="1" alignment="CENTER"/>
         </StackPane>
+        <Label text="LINES" styleClass="nextBrickLabel" />
+        <Label fx:id="linesValueLabel" styleClass="scoreValueClass" />
+        <Label text="LEVEL" styleClass="nextBrickLabel" />
+        <Label fx:id="levelValueLabel" styleClass="scoreValueClass" />
     </VBox>
 
     <VBox layoutX="25" layoutY="80" alignment="CENTER">

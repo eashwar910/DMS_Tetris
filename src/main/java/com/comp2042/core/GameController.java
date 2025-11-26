@@ -21,6 +21,9 @@ public class GameController implements InputEventListener {
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
         viewGuiController.bindHighScore(board.getScore().highScoreProperty());
+        viewGuiController.bindLinesCleared(board.getScore().linesClearedProperty());
+        viewGuiController.bindLevelValue(board.getScore().levelProperty());
+        viewGuiController.bindLevel(board.getScore().levelProperty());
     }
 
     @Override
@@ -32,6 +35,7 @@ public class GameController implements InputEventListener {
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                board.getScore().addLines(clearRow.getLinesRemoved());
             }
             if (board.createNewBrick()) {
                 boolean newHigh = board.getScore().scoreProperty().get() > 0 &&
@@ -95,6 +99,7 @@ public class GameController implements InputEventListener {
         if (clearRow.getLinesRemoved() > 0)
         {
             board.getScore().add(clearRow.getScoreBonus());
+            board.getScore().addLines(clearRow.getLinesRemoved());
         }
 
         if (dropped > 0)
