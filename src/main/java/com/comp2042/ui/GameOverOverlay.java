@@ -25,24 +25,14 @@ public class GameOverOverlay extends BorderPane {
         restartButton.getStyleClass().add("ipad-dark-grey");
         restartButton.setPrefWidth(200);
         restartButton.setPrefHeight(50);
-        restartButton.setOnAction(e -> {
-            if (restartEventHandler != null)
-            {
-                restartEventHandler.handle(e);
-            }
-        });
+        restartButton.setOnAction(e -> { if (restartEventHandler != null) restartEventHandler.handle(e); });
 
         // setting up the exit button on the game over panel
         exitButton = new Button("EXIT");
         exitButton.getStyleClass().add("ipad-dark-grey");
         exitButton.setPrefWidth(200);
         exitButton.setPrefHeight(50);
-        exitButton.setOnAction(e -> {
-            if (exitEventHandler != null)
-            {
-                exitEventHandler.handle(e);
-            }
-        });
+        exitButton.setOnAction(e -> { if (exitEventHandler != null) exitEventHandler.handle(e); });
 
         // create Vbox to align the buttons with game over text
         VBox box = new VBox(20);

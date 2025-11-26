@@ -15,14 +15,12 @@ import com.comp2042.logic.workflow.ViewData;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -116,8 +114,6 @@ public class GuiController implements Initializable {
 
     private final DoubleProperty gamePanelSceneY = new SimpleDoubleProperty();
 
-    private boolean helpFromStart = false;
-
     private OverlayManager overlayManager;
 
     @Override
@@ -145,8 +141,18 @@ public class GuiController implements Initializable {
         // use new class
         gamePanel.setOnKeyPressed(new KeyboardInputManager(this, gameRenderer));
 
-        // setup overlays using method from new class
-        setupOverlays();
+        // use methods from overlay manager to set up overlays
+        overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
+        overlayManager.setup(
+                this,
+                dynamicStartScreen,
+                gamePanel,
+                playButton,
+                helpButton,
+                closeHelpButton,
+                pauseScreen,
+                gameOverPanel
+        );
 
         // used a title logo image found online, added it to fxml file using imageview
         // bind title image property to start overlay
@@ -170,73 +176,7 @@ public class GuiController implements Initializable {
         return this.eventListener;
     }
 
-    private void setupOverlays() {
-        if (gameOverOverlay != null) gameOverOverlay.setVisible(false);
-
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.setRestartEventHandler(this::newGame);
-            gameOverPanel.setExitEventHandler(e -> quitGame());
-        }
-
-        overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
-
-        if (startOverlay != null)
-        {
-            isPause.set(true);
-            overlayManager.bindOverlayFill(startOverlay);
-            overlayManager.showStart();
-            if (dynamicStartScreen != null)
-            {
-                dynamicStartScreen.start();
-            }
-        }
-
-        if (playButton != null) playButton.setOnAction(e -> startGame());
-
-        if (helpOverlay != null)
-        {
-            overlayManager.bindOverlayFill(helpOverlay);
-            overlayManager.hideHelp();
-        }
-
-        if (helpButton != null)
-        {
-            helpButton.setOnAction(e -> {
-                helpFromStart = startOverlay != null && startOverlay.isVisible();
-                overlayManager.showHelp();
-            });
-        }
-
-        if (closeHelpButton != null)
-        {
-            closeHelpButton.setOnAction(e -> {
-                overlayManager.hideHelp();
-                if (helpFromStart && startOverlay != null) {
-                    overlayManager.showStart();
-                    helpFromStart = false;
-                }
-            });
-        }
-
-        if (pauseScreen != null && groupPause != null)
-        {
-            overlayManager.bindOverlayFill(groupPause);
-            overlayManager.hidePause();
-            pauseScreen.prefWidthProperty().bind(groupPause.widthProperty());
-            pauseScreen.prefHeightProperty().bind(groupPause.heightProperty());
-            pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            pauseScreen.setResumeHandler(e -> resumeGame());
-            pauseScreen.setQuitHandler(e -> quitGame());
-            pauseScreen.setNewGameHandler(this::newGame);
-        }
-
-        if (gameOverOverlay != null)
-        {
-            overlayManager.bindOverlayFill(gameOverOverlay);
-            overlayManager.hideGameOver();
-        }
-    }
+    // removed set up overlay function from this class
 
     public boolean isPlaying() {
         return !isPause.get() && !isGameOver.get();
@@ -261,18 +201,8 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void togglePause() {
-        if (!isPause.get())
-        {
-            isPause.set(true);
-            if (timeLine != null) timeLine.pause();
-            overlayManager.showPause();
-        }
-        else
-        {
-            resumeGame();
-        }
-    }
+    // used function from overlay manager
+    public void togglePause() { overlayManager.togglePause(); }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         timeLine = new Timeline(new KeyFrame(
@@ -303,71 +233,15 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void gameOver(boolean newHighScore) {
-        if (timeLine != null) timeLine.stop();
-        isPause.set(true);
-        isGameOver.set(true);
-        overlayManager.showGameOver();
-        if (gameOverPanel != null) {
-            if (newHighScore) {
-                gameOverPanel.setHighScoreMode();
-                gameOverPanel.setRestartEventHandler(this::newGame);
-                gameOverPanel.setExitEventHandler(e -> goToMainMenu());
-            } else {
-                gameOverPanel.setDefaultMode();
-                gameOverPanel.setRestartEventHandler(this::newGame);
-                gameOverPanel.setExitEventHandler(e -> quitGame());
-            }
-            gameOverPanel.setVisible(true);
-        }
-    }
+    // full method moved to overlay manager
+    public void gameOver(boolean newHighScore) { overlayManager.gameOver(newHighScore); }
 
-    public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
-        gameOverPanel.setVisible(false);
-        overlayManager.hideGameOver();
-        overlayManager.hidePause();
-        eventListener.createNewGame();
-        gamePanel.requestFocus();
-        if (startOverlay != null && startOverlay.isVisible()) {
-            timeLine.pause();
-        } else {
-            timeLine.play();
-        }
-        isPause.set(false);
-        isGameOver.set(false);
-    }
-
-    private void startGame() {
-        if (startOverlay != null)
-        {
-            overlayManager.hideStart();
-            if (dynamicStartScreen != null) dynamicStartScreen.stop();
-        }
-
-        overlayManager.hideHelp();
-        if (timeLine != null) timeLine.play();
-        isPause.set(false);
-        gamePanel.requestFocus();
-    }
-
-    private void resumeGame() {
-        isPause.set(false);
-        if (timeLine != null) timeLine.play();
-        overlayManager.hidePause();
-        gamePanel.requestFocus();
-    }
-
-    private void quitGame() { Platform.exit(); }
-
-    // go to main menu button method
-    private void goToMainMenu() {
-        overlayManager.hideGameOver();
-        if (startOverlay != null) {
-            overlayManager.showStart();
-            isPause.set(true);
-            if (timeLine != null) timeLine.pause();
-            if (dynamicStartScreen != null) dynamicStartScreen.start();
-        }
-    }
+    // set up getters
+    public void setOverlayManager(OverlayManager overlayManager) { this.overlayManager = overlayManager; }
+    public OverlayManager getOverlayManager() { return overlayManager; }
+    public Timeline getTimeLine() { return timeLine; }
+    public AnchorPane getStartOverlay() { return startOverlay; }
+    public BooleanProperty getIsPause() { return isPause; }
+    public BooleanProperty getIsGameOver() { return isGameOver; }
+    
 }
