@@ -80,6 +80,7 @@ public final class OverlayManager {
             bindOverlayFill(startOverlay);
             show(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.start();
+            controller.setBrickPanelVisible(false);
         }
 
         if (playButton != null) playButton.setOnAction(e -> startGame());
@@ -128,6 +129,9 @@ public final class OverlayManager {
         if (overlay != null)
         {
             overlay.setVisible(true); overlay.toFront();
+            if (overlay == startOverlay) {
+                controller.setBrickPanelVisible(false);
+            }
         }
     }
     private void hide(Region overlay) {
@@ -154,6 +158,7 @@ public final class OverlayManager {
 
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
         controller.getIsPause().set(false);
+        controller.setBrickPanelVisible(true);
         if (gamePanel != null) gamePanel.requestFocus();
     }
 
@@ -229,7 +234,7 @@ public final class OverlayManager {
                 });
             }
             else
-             {
+            {
                 gameOverPanel.setDefaultMode();
                 gameOverPanel.setRestartEventHandler(this::newGame);
                 gameOverPanel.setExitEventHandler(e -> quitGame());

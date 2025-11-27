@@ -35,6 +35,7 @@ import javafx.util.Duration;
 public class GuiController implements Initializable {
 
     private GameRenderer gameRenderer;
+    private GhostBrickHandler ghostBrickHandler;
 
     @FXML
     private GridPane gamePanel;
@@ -123,6 +124,10 @@ public class GuiController implements Initializable {
 
     private OverlayManager overlayManager;
 
+    private int[][] lastBoardMatrix;
+
+    private ViewData lastViewData;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -196,6 +201,7 @@ public class GuiController implements Initializable {
             showScorePopup(downData.getClearRow());
             // direct access to renderer because of sonar cube warning
             gameRenderer.refreshBrick(downData.getViewData());
+            updateGhost(downData.getViewData());
         }
         gamePanel.requestFocus();
     }
@@ -220,9 +226,28 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Animation.INDEFINITE);
         timeLine.pause();
         gameRenderer.initGameView(boardMatrix, brick);
+        // set up ghost brick handler
+        ghostBrickHandler = new GhostBrickHandler(gamePanel, brickPanel, gamePanelSceneX, gamePanelSceneY, gameRenderer);
+        lastBoardMatrix = boardMatrix;
+        lastViewData = brick;
+        ghostBrickHandler.init(brick);
+        if (startOverlay != null)
+        {
+            setBrickPanelVisible(false);
+        }
+
     }
 
-    public void refreshGameBackground(int[][] board) { gameRenderer.refreshGameBackground(board); }
+    public void refreshGameBackground(int[][] board) {
+        lastBoardMatrix = board;
+        gameRenderer.refreshGameBackground(board);
+        if (lastViewData != null && ghostBrickHandler != null)
+        {
+            ghostBrickHandler.update(lastViewData, lastBoardMatrix);
+        }
+    }
+
+    public void refreshGameBackground(int[][] board, ViewData brick) { gameRenderer.refreshGameBackground(board); lastBoardMatrix = board; lastViewData = brick; }
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -267,6 +292,26 @@ public class GuiController implements Initializable {
         if (integerProperty == null) return;
         integerProperty.addListener((obs, oldVal, newVal) -> updateFallInterval(newVal.intValue()));
         updateFallInterval(integerProperty.get());
+    }
+
+    // updating ghost brick every brick (refactor later !)
+    public void updateGhost(ViewData brick) {
+        lastViewData = brick;
+        boolean show = isPlaying() && !(startOverlay != null && startOverlay.isVisible());
+        if (ghostBrickHandler != null && lastBoardMatrix != null && show)
+        {
+            ghostBrickHandler.update(brick, lastBoardMatrix);
+        }
+        else if (ghostBrickHandler != null)
+        {
+            ghostBrickHandler.clear();
+        }
+    }
+
+    // toggling visibility of ghost prick panel and brick panel
+    public void setBrickPanelVisible(boolean visible) {
+        if (brickPanel != null) brickPanel.setVisible(visible);
+        if (!visible && ghostBrickHandler != null) ghostBrickHandler.clear();
     }
 
     private void updateFallInterval(int level) {

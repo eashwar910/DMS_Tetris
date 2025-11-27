@@ -41,15 +41,21 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
 
     private void handleMovement(KeyEvent keyEvent, InputEventListener eventListener) {
         if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-            renderer.refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+            com.comp2042.logic.workflow.ViewData vd = eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+            renderer.refreshBrick(vd);
+            controller.updateGhost(vd);
             keyEvent.consume();
         }
         if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-            renderer.refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+            com.comp2042.logic.workflow.ViewData vd = eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            renderer.refreshBrick(vd);
+            controller.updateGhost(vd);
             keyEvent.consume();
         }
         if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-            renderer.refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+            com.comp2042.logic.workflow.ViewData vd = eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
+            renderer.refreshBrick(vd);
+            controller.updateGhost(vd);
             keyEvent.consume();
         }
         if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
@@ -57,13 +63,16 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
             keyEvent.consume();
         }
         if (keyEvent.getCode() == KeyCode.C) {
-            renderer.refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
+            com.comp2042.logic.workflow.ViewData vd = eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER));
+            renderer.refreshBrick(vd);
+            controller.updateGhost(vd);
             keyEvent.consume();
         }
         if (keyEvent.getCode() == KeyCode.SPACE) {
             DownData downData = eventListener.onHardDropEvent(new MoveEvent(EventType.HARD_DROP, EventSource.USER));
             renderer.refreshBrick(downData.getViewData());
             controller.showScorePopup(downData.getClearRow());
+            controller.updateGhost(downData.getViewData());
             keyEvent.consume();
         }
     }
