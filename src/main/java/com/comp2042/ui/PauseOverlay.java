@@ -40,7 +40,7 @@ public class PauseOverlay extends BorderPane {
         resumeButton.setOnAction(e -> { if (resumeHandler != null) resumeHandler.handle(e); });
 
         // set up the quit button
-        quitButton = new Button("QUIT GAME");
+        quitButton = new Button("MAIN MENU");
         quitButton.getStyleClass().add("ipad-dark-grey");
         quitButton.setPrefWidth(200);
         quitButton.setPrefHeight(50);

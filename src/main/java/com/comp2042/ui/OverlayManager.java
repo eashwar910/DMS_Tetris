@@ -72,7 +72,7 @@ public final class OverlayManager {
 
         if (gameOverPanel != null) {
             gameOverPanel.setRestartEventHandler(this::newGame);
-            gameOverPanel.setExitEventHandler(e -> quitGame());
+            gameOverPanel.setExitEventHandler(e -> goToMainMenu());
         }
 
         if (startOverlay != null) {
@@ -114,7 +114,7 @@ public final class OverlayManager {
             pauseScreen.prefHeightProperty().bind(pauseOverlay.heightProperty());
             pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             pauseScreen.setResumeHandler(e -> resumeGame());
-            pauseScreen.setQuitHandler(e -> quitGame());
+            pauseScreen.setQuitHandler(e -> goToMainMenu());
             pauseScreen.setNewGameHandler(this::newGame);
         }
 
@@ -151,10 +151,9 @@ public final class OverlayManager {
         if (helpOverlay != null) hide(helpOverlay);
 
         // fixed game being stuck at game over after new high score
-        if (controller.getIsGameOver().get() || (startOverlay != null && startOverlay.isVisible())) {
-            if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
-            controller.getIsGameOver().set(false);
-        }
+        // fixed game resuming after going to main menu from pause screen
+        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+        controller.getIsGameOver().set(false);
 
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
         controller.getIsPause().set(false);
@@ -181,9 +180,16 @@ public final class OverlayManager {
         }
     }
 
-    public void quitGame() {
-        Platform.exit();
-        System.exit(0);
+    public void goToMainMenu() {
+        hide(pauseOverlay);
+        if (startOverlay != null)
+        {
+            show(startOverlay);
+            controller.getIsPause().set(true);
+            if (controller.getTimeLine() != null) controller.getTimeLine().pause();
+            if (dynamicStartScreen != null) dynamicStartScreen.start();
+            controller.setBrickPanelVisible(false);
+        }
     }
 
     // new game method
@@ -237,7 +243,7 @@ public final class OverlayManager {
             {
                 gameOverPanel.setDefaultMode();
                 gameOverPanel.setRestartEventHandler(this::newGame);
-                gameOverPanel.setExitEventHandler(e -> quitGame());
+                gameOverPanel.setExitEventHandler(e -> goToMainMenu());
             }
             gameOverPanel.setVisible(true);
         }
