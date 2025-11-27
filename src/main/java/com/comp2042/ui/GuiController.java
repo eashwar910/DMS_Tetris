@@ -12,6 +12,8 @@ import com.comp2042.input.KeyboardInputManager;
 import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
+import com.comp2042.core.GameModeHandler;
+import com.comp2042.core.GameModeHandler.GameMode;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -109,9 +111,22 @@ public class GuiController implements Initializable {
     @FXML
     private Label levelValueLabel;
 
+    @FXML
+    private javafx.scene.control.Button raceButton;
+
+    @FXML
+    private javafx.scene.control.Button mineButton;
+
+    @FXML
+    private Label timerLabel;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
+
+    private Timeline modeTimer;
+
+    private GameModeHandler modeHandler;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -160,10 +175,23 @@ public class GuiController implements Initializable {
                 dynamicStartScreen,
                 gamePanel,
                 playButton,
+                raceButton,
                 helpButton,
                 closeHelpButton,
                 pauseScreen,
                 gameOverPanel
+        );
+
+        // setup game mode handler
+        modeHandler = new GameModeHandler(
+                timerLabel,
+                () -> overlayManager.gameOver(false),
+                mode -> {
+                    if (eventListener instanceof com.comp2042.core.GameController gc)
+                    {
+                        gc.setMode(mode);
+                    }
+                }
         );
 
         // used a title logo image found online, added it to fxml file using imageview
@@ -216,6 +244,21 @@ public class GuiController implements Initializable {
 
     // used function from overlay manager
     public void togglePause() { overlayManager.togglePause(); }
+
+    // created wrappers for methods from mode handler (fix later)
+    public void startNormalMode() { modeHandler.startNormal(); }
+
+    public void startTimedMode() { modeHandler.startTimed(); }
+
+    public void pauseModeTimer() { modeHandler.pause(); }
+
+    public void resumeModeTimer() { modeHandler.resume(); }
+
+    public void stopModeTimer() { modeHandler.stop(); }
+
+    public GameMode getCurrentMode() { return modeHandler.getMode(); }
+
+    public void restartCurrentModeTimer() { modeHandler.restartForNewGame(); }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         timeLine = new Timeline(new KeyFrame(
@@ -342,5 +385,5 @@ public class GuiController implements Initializable {
             }
         }
     }
-    
+
 }

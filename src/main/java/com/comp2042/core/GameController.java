@@ -7,6 +7,7 @@ import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
 import com.comp2042.ui.GuiController;
+import com.comp2042.core.GameModeHandler.GameMode;
 
 public class GameController implements InputEventListener {
 
@@ -24,6 +25,7 @@ public class GameController implements InputEventListener {
         viewGuiController.bindLinesCleared(board.getScore().linesClearedProperty());
         viewGuiController.bindLevelValue(board.getScore().levelProperty());
         viewGuiController.bindLevel(board.getScore().levelProperty());
+        board.getScore().setMode(GameMode.NORMAL);
     }
 
     @Override
@@ -82,6 +84,11 @@ public class GameController implements InputEventListener {
     public void createNewGame() {
         board.newGame();
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
+    }
+
+    // method to set game mode
+    public void setMode(GameMode mode) {
+        board.getScore().setMode(mode);
     }
 
 
