@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.comp2042.core.Constants;
+import com.comp2042.core.GameModeHandler;
+import com.comp2042.core.GameModeHandler.GameMode;
 import com.comp2042.events.EventSource;
 import com.comp2042.events.EventType;
 import com.comp2042.events.MoveEvent;
@@ -12,8 +14,6 @@ import com.comp2042.input.KeyboardInputManager;
 import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
-import com.comp2042.core.GameModeHandler;
-import com.comp2042.core.GameModeHandler.GameMode;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -176,6 +176,7 @@ public class GuiController implements Initializable {
                 gamePanel,
                 playButton,
                 raceButton,
+                mineButton,
                 helpButton,
                 closeHelpButton,
                 pauseScreen,
@@ -187,6 +188,10 @@ public class GuiController implements Initializable {
                 timerLabel,
                 () -> overlayManager.gameOver(false),
                 mode -> {
+                    // logic to toggle renderer mode based on game mode
+                    boolean isUpsideDown = (mode == GameMode.BOTTOMS_UP);
+                    setUpsideDownMode(isUpsideDown);
+
                     if (eventListener instanceof com.comp2042.core.GameController gc)
                     {
                         gc.setMode(mode);
@@ -216,7 +221,16 @@ public class GuiController implements Initializable {
         return this.eventListener;
     }
 
-    // removed set up overlay function from this class
+    // helper method to switch modes in renderers
+    public void setUpsideDownMode(boolean enable) {
+        if (gameRenderer != null) gameRenderer.setUpsideDown(enable);
+        if (ghostBrickHandler != null) ghostBrickHandler.setUpsideDown(enable);
+
+        // force refresh if we have data, so the screen flips instantly
+        if (lastBoardMatrix != null) {
+            gameRenderer.refreshGameBackground(lastBoardMatrix);
+        }
+    }
 
     public boolean isPlaying() {
         return !isPause.get() && !isGameOver.get();
@@ -248,6 +262,9 @@ public class GuiController implements Initializable {
     // created wrappers for methods from mode handler (fix later)
     public void startNormalMode() { modeHandler.startNormal(); }
 
+    // wrapper for new mode (fix later)
+    public void startUpsideDownMode() { modeHandler.startUpsideDown(); }
+
     public void startTimedMode() { modeHandler.startTimed(); }
 
     public void pauseModeTimer() { modeHandler.pause(); }
@@ -271,6 +288,9 @@ public class GuiController implements Initializable {
         gameRenderer.initGameView(boardMatrix, brick);
         // set up ghost brick handler
         ghostBrickHandler = new GhostBrickHandler(gamePanel, brickPanel, gamePanelSceneX, gamePanelSceneY, gameRenderer);
+        // ensure ghost handler respects current mode on init
+        ghostBrickHandler.setUpsideDown(modeHandler.getMode() == GameMode.BOTTOMS_UP);
+
         lastBoardMatrix = boardMatrix;
         lastViewData = brick;
         ghostBrickHandler.init(brick);

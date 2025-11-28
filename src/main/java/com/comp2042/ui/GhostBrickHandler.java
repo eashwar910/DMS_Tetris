@@ -19,6 +19,7 @@ public class GhostBrickHandler {
     private final GameRenderer renderer;
     private final GridPane ghostPanel = new GridPane();
     private Rectangle[][] ghostRectangles;
+    private boolean isUpsideDown = false;
 
     // create a ghost brick panel with the same proportions as boreder pane
     // place it on top of the brick panel
@@ -49,7 +50,11 @@ public class GhostBrickHandler {
         }
     }
 
-    // gets the brick data and creates a transparent version of it
+    // setter for mode
+    public void setUpsideDown(boolean value) {
+        this.isUpsideDown = value;
+    }
+
     public void init(ViewData brick) {
 
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
@@ -95,12 +100,21 @@ public class GhostBrickHandler {
         ghostPanel.setVisible(false);
     }
 
-    // calculate ghost panel position in pixel value
+    // calculates position differently if upside down
     private void positionGhostPanel(int xCurrent, int yCurrent, int yFinal) {
         double cellWidth = gamePanel.getHgap() + Constants.BRICK_SIZE;
         double cellHeight = gamePanel.getVgap() + Constants.BRICK_SIZE;
         ghostPanel.setLayoutX(brickPanel.getLayoutX());
-        ghostPanel.setLayoutY(brickPanel.getLayoutY() + (yFinal - yCurrent) * cellHeight);
+
+        double yOffset;
+        if (isUpsideDown) {
+            // we subtract the pixel difference instead of adding it when upside down
+            yOffset = -(yFinal - yCurrent) * cellHeight;
+        } else {
+            yOffset = (yFinal - yCurrent) * cellHeight;
+        }
+
+        ghostPanel.setLayoutY(brickPanel.getLayoutY() + yOffset);
     }
 
     private void ensureRectangles(ViewData brick) {
@@ -111,13 +125,20 @@ public class GhostBrickHandler {
     }
 
     // apply colours for the ghost block - same as actual block
+    // added internal row mirroring logic for upside down mode
     private void applyGhostColors(ViewData brick) {
         int[][] shape = brick.getBrickData();
-        for (int i = 0; i < shape.length; i++)
+        int brickHeight = shape.length;
+
+        for (int i = 0; i < brickHeight; i++)
         {
+            // problem : block flipped whiel landing
+            // fix : inroduced target row variable to check
+            int targetRow = isUpsideDown ? (brickHeight - 1 - i) : i;
+
             for (int j = 0; j < shape[i].length; j++)
             {
-                Rectangle r = ghostRectangles[i][j];
+                Rectangle r = ghostRectangles[targetRow][j];
                 int cell = shape[i][j];
                 if (cell == 0)
                 {

@@ -1,16 +1,16 @@
 package com.comp2042.core;
 
+import java.util.function.Consumer;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 
-import java.util.function.Consumer;
-
 public final class GameModeHandler {
 
-    public enum GameMode { NORMAL, TIMED, TETRO } // tetro will be used later
+    public enum GameMode { NORMAL, TIMED, BOTTOMS_UP } // replaced tetro with upside down mode
 
     private final Label timerLabel;
     private final Runnable onTimeUp;
@@ -33,6 +33,14 @@ public final class GameModeHandler {
     // method to start the normal game mode
     public void startNormal() {
         current = GameMode.NORMAL;
+        if (onModeChanged != null) onModeChanged.accept(current);
+        stop();
+        if (timerLabel != null) timerLabel.setVisible(false);
+    }
+
+    // method to start bottoms up mode
+    public void startUpsideDown() {
+        current = GameMode.BOTTOMS_UP;
         if (onModeChanged != null) onModeChanged.accept(current);
         stop();
         if (timerLabel != null) timerLabel.setVisible(false);

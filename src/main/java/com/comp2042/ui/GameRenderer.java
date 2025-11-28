@@ -1,7 +1,7 @@
 package com.comp2042.ui;
 
-import com.comp2042.logic.workflow.ViewData;
 import com.comp2042.core.Constants;
+import com.comp2042.logic.workflow.ViewData;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.layout.GridPane;
@@ -20,6 +20,8 @@ public class GameRenderer {
 
     private final DoubleProperty gamePanelSceneX;
     private final DoubleProperty gamePanelSceneY;
+
+    private boolean isUpsideDown = false;
 
     Rectangle[][] displayMatrix;
     Rectangle[][] rectangles;
@@ -40,6 +42,11 @@ public class GameRenderer {
         this.gamePanelSceneX = gamePanelSceneX;
         this.gamePanelSceneY = gamePanelSceneY;
         this.holdBrickPanel = holdBrickPanel;
+    }
+
+    // method to toggle upside down mode
+    public void setUpsideDown(boolean value) {
+        this.isUpsideDown = value;
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -72,7 +79,6 @@ public class GameRenderer {
         for (int i = 0; i < nextBrickDataArr[0].length; i++) {
             for (int j = 0; j < nextBrickDataArr[0][i].length; j++) {
                 Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                // FIXED: changed private to public
                 rectangle.setFill(getFillColor(nextBrickDataArr[0][i][j]));
                 nextBrickRectangles1[i][j] = rectangle;
                 nextBrickPanel1.add(rectangle, j, i);
@@ -84,7 +90,6 @@ public class GameRenderer {
         for (int i = 0; i < nextBrickDataArr[1].length; i++) {
             for (int j = 0; j < nextBrickDataArr[1][i].length; j++) {
                 Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                // FIXED: changed private to public
                 rectangle.setFill(getFillColor(nextBrickDataArr[1][i][j]));
                 nextBrickRectangles2[i][j] = rectangle;
                 nextBrickPanel2.add(rectangle, j, i);
@@ -96,7 +101,6 @@ public class GameRenderer {
         for (int i = 0; i < nextBrickDataArr[2].length; i++) {
             for (int j = 0; j < nextBrickDataArr[2][i].length; j++) {
                 Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                // FIXED: changed private to public
                 rectangle.setFill(getFillColor(nextBrickDataArr[2][i][j]));
                 nextBrickRectangles3[i][j] = rectangle;
                 nextBrickPanel3.add(rectangle, j, i);
@@ -141,21 +145,42 @@ public class GameRenderer {
         return returnPaint;
     }
 
-    // private to public
+    // Calculates Y position from bottom if upside down
     public void positionBrickPanel(ViewData brick) {
         double cellWidth = gamePanel.getHgap() + Constants.BRICK_SIZE;
         double cellHeight = gamePanel.getVgap() + Constants.BRICK_SIZE;
 
         brickPanel.setLayoutX(gamePanelSceneX.get() + brick.getxPosition() * cellWidth);
-        brickPanel.setLayoutY(gamePanelSceneY.get() + brick.getyPosition() * cellHeight);
+
+        double yPos;
+        if (isUpsideDown)
+        {
+            // flip the Y positio and we subtract brick height to align it properly.
+            yPos = Constants.BOARD_ROWS - brick.getyPosition() - brick.getBrickData().length;
+        }
+        else
+        {
+            yPos = brick.getyPosition();
+        }
+
+        brickPanel.setLayoutY(gamePanelSceneY.get() + yPos * cellHeight);
     }
 
-    // is pause check removed ( add it to pause manager ?? - tbd )
+    // added internal row mirroring logic
     public void refreshBrick(ViewData brick) {
         positionBrickPanel(brick);
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+
+        int brickHeight = brick.getBrickData().length;
+
+        for (int i = 0; i < brickHeight; i++)
+        {
+            // if upside down, we fill the panel from bottom-to-top
+            // to match the mirrored coordinate system of the main board.
+            int targetRow = isUpsideDown ? (brickHeight - 1 - i) : i;
+
+            for (int j = 0; j < brick.getBrickData()[i].length; j++)
+            {
+                setRectangleData(brick.getBrickData()[i][j], rectangles[targetRow][j]);
             }
         }
 
@@ -185,10 +210,14 @@ public class GameRenderer {
         }
     }
 
+    // aligns logic rows to visual rows based on mode
     public void refreshGameBackground(int[][] board) {
         for (int i = 0; i < board.length; i++) {
+            // calculate which visual row corresponds to logic row i
+            int visualRow = isUpsideDown ? (board.length - 1 - i) : i;
+
             for (int j = 0; j < board[i].length; j++) {
-                setRectangleData(board[i][j], displayMatrix[i][j]);
+                setRectangleData(board[i][j], displayMatrix[visualRow][j]);
             }
         }
     }

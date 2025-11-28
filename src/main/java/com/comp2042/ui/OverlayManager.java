@@ -55,6 +55,7 @@ public final class OverlayManager {
                       GridPane gamePanel,
                       Button playButton,
                       Button raceButton,
+                      Button mineButton,
                       Button helpButton,
                       Button closeHelpButton,
                       PauseOverlay pauseScreen,
@@ -86,6 +87,7 @@ public final class OverlayManager {
 
         if (playButton != null) playButton.setOnAction(e -> startNormalGame());
         if (raceButton != null) raceButton.setOnAction(e -> startTimedGame());
+        if (mineButton != null) mineButton.setOnAction(e -> startUpsideDownGame());
 
         if (helpOverlay != null) {
             bindOverlayFill(helpOverlay);
@@ -177,6 +179,26 @@ public final class OverlayManager {
 
         // fixed game being stuck at game over after new high score
         // fixed game resuming after going to main menu from pause screen
+        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+        controller.getIsGameOver().set(false);
+
+        if (controller.getTimeLine() != null) controller.getTimeLine().play();
+        controller.getIsPause().set(false);
+        controller.setBrickPanelVisible(true);
+
+        if (gamePanel != null) gamePanel.requestFocus();
+    }
+
+    // start upside down game mode
+    public void startUpsideDownGame() {
+        if (startOverlay != null) {
+            hide(startOverlay);
+            if (dynamicStartScreen != null) dynamicStartScreen.stop();
+        }
+
+        if (helpOverlay != null) hide(helpOverlay);
+        controller.startUpsideDownMode();
+
         if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
         controller.getIsGameOver().set(false);
 

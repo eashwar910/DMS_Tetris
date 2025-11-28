@@ -1,2 +1,3 @@
 normal=12272
 timed=2940
+bottomsUp=11988

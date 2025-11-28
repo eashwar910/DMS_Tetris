@@ -20,6 +20,7 @@ public final class Score {
     private GameMode mode = GameMode.NORMAL;
     private int highNormal = 0; // seperate high scores for each game mode
     private int highTimed = 0;
+    private int highBottomsUp = 0;
 
     public Score() {
         loadHighScore();
@@ -40,13 +41,12 @@ public final class Score {
     // set mode definition (wrapper in other class - fix)
     public void setMode(GameMode mode) {
         this.mode = mode;
-        if (mode == GameMode.NORMAL)
-        {
+        if (mode == GameMode.NORMAL) {
             highScore.setValue(highNormal);
-        }
-        else
-        {
+        } else if (mode == GameMode.TIMED) {
             highScore.setValue(highTimed);
+        } else {
+            highScore.setValue(highBottomsUp);
         }
     }
 
@@ -61,13 +61,12 @@ public final class Score {
         if (score.getValue() > highScore.getValue())
         {
             highScore.setValue(score.getValue());
-            if (mode == GameMode.NORMAL)
-            {
+            if (mode == GameMode.NORMAL) {
                 highNormal = highScore.get();
-            }
-            else
-            {
+            } else if (mode == GameMode.TIMED) {
                 highTimed = highScore.get();
+            } else {
+                highBottomsUp = highScore.get();
             }
             saveHighScore();
         }
@@ -110,6 +109,7 @@ public final class Score {
                                 int val = Integer.parseInt(kv[1].trim());
                                 if ("normal".equalsIgnoreCase(key)) highNormal = val;
                                 if ("timed".equalsIgnoreCase(key)) highTimed = val;
+                                if ("bottomsUp".equalsIgnoreCase(key) || "bottoms_up".equalsIgnoreCase(key)) highBottomsUp = val;
                             }
                         }
                     }
@@ -130,7 +130,7 @@ public final class Score {
         Path path = Paths.get(Constants.HIGHSCORE_FILE);
         try
         {
-            String content = "normal=" + highNormal + "\n" + "timed=" + highTimed + "\n";
+            String content = "normal=" + highNormal + "\n" + "timed=" + highTimed + "\n" + "bottomsUp=" + highBottomsUp + "\n";
             Files.writeString(path, content);
         } catch (IOException ignored) {}
     }
