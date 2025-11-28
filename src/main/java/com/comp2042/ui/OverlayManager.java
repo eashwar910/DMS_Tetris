@@ -82,6 +82,7 @@ public final class OverlayManager {
             bindOverlayFill(startOverlay);
             show(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.start();
+            controller.startStartScreenMusic();
             controller.setBrickPanelVisible(false);
         }
 
@@ -152,10 +153,12 @@ public final class OverlayManager {
         {
             hide(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.stop();
+            controller.stopStartScreenMusic();
         }
 
         if (helpOverlay != null) hide(helpOverlay);
         controller.startNormalMode();
+        controller.startGameMusic();
 
         if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
         controller.getIsGameOver().set(false);
@@ -172,10 +175,12 @@ public final class OverlayManager {
         if (startOverlay != null) {
             hide(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.stop();
+            controller.stopStartScreenMusic();
         }
 
         if (helpOverlay != null) hide(helpOverlay);
         controller.startTimedMode();
+        controller.startGameMusic();
 
         // fixed game being stuck at game over after new high score
         // fixed game resuming after going to main menu from pause screen
@@ -194,10 +199,12 @@ public final class OverlayManager {
         if (startOverlay != null) {
             hide(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.stop();
+            controller.stopStartScreenMusic();
         }
 
         if (helpOverlay != null) hide(helpOverlay);
         controller.startUpsideDownMode();
+        controller.startGameMusic();
 
         if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
         controller.getIsGameOver().set(false);
@@ -214,6 +221,7 @@ public final class OverlayManager {
         controller.getIsPause().set(false);
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
         controller.resumeModeTimer();
+        controller.resumeGameMusic();
         hide(pauseOverlay);
         if (gamePanel != null) gamePanel.requestFocus();
     }
@@ -228,6 +236,8 @@ public final class OverlayManager {
             if (dynamicStartScreen != null) dynamicStartScreen.start();
             controller.setBrickPanelVisible(false);
             controller.stopModeTimer();
+            controller.stopGameMusic();
+            controller.startStartScreenMusic();
         }
     }
 
@@ -237,6 +247,7 @@ public final class OverlayManager {
             controller.getIsPause().set(true);
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
             controller.pauseModeTimer();
+            controller.pauseGameMusic();
             show(pauseOverlay);
         } else {
             resumeGame();
@@ -257,6 +268,8 @@ public final class OverlayManager {
         hide(pauseOverlay);
         controller.getEventListener().createNewGame();
         controller.restartCurrentModeTimer();
+        controller.stopOverlaySound();
+        controller.restartGameMusic();
 
         if (gamePanel != null) gamePanel.requestFocus();
         if (startOverlay != null && startOverlay.isVisible())
@@ -277,7 +290,8 @@ public final class OverlayManager {
     public void gameOver(boolean newHighScore) {
         if (controller.getTimeLine() != null) controller.getTimeLine().stop();
         controller.stopModeTimer();
-
+        controller.stopGameMusic();
+        
         controller.getIsPause().set(true);
         controller.getIsGameOver().set(true);
         show(gameOverOverlay);
@@ -287,6 +301,7 @@ public final class OverlayManager {
             if (newHighScore)
             {
                 gameOverPanel.setHighScoreMode();
+                controller.playHighScoreSound();
                 gameOverPanel.setRestartEventHandler(this::newGame);
                 gameOverPanel.setExitEventHandler(e -> {
                     hide(gameOverOverlay);
@@ -296,12 +311,14 @@ public final class OverlayManager {
                         controller.getIsPause().set(true);
                         if (controller.getTimeLine() != null) controller.getTimeLine().pause();
                         if (dynamicStartScreen != null) dynamicStartScreen.start();
+                        controller.startStartScreenMusic();
                     }
                 });
             }
             else
             {
                 gameOverPanel.setDefaultMode();
+                controller.playGameOverSound();
                 gameOverPanel.setRestartEventHandler(this::newGame);
                 gameOverPanel.setExitEventHandler(e -> quitGame());
             }
