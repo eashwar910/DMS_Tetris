@@ -111,7 +111,7 @@ public class GameController implements InputEventListener {
 
         if (dropped > 0)
         {
-            board.getScore().add(dropped);
+            board.getScore().add(dropped * 2);
         }
 
         if (board.createNewBrick())

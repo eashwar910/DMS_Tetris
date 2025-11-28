@@ -254,9 +254,7 @@ public class GuiController implements Initializable {
 
     public void showScorePopup(ClearRow clearRow) {
         if (clearRow != null && clearRow.getLinesRemoved() > 0) {
-            ScorePopup notificationPanel = new ScorePopup("+" + clearRow.getScoreBonus());
-            groupNotification.getChildren().add(notificationPanel);
-            notificationPanel.showScore(groupNotification.getChildren());
+            ScorePopup.showForClearRow(groupNotification.getChildren(), clearRow.getScoreBonus(), clearRow.getLinesRemoved());
         }
     }
 

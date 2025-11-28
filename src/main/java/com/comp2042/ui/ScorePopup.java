@@ -28,4 +28,23 @@ public class ScorePopup extends BorderPane {
         transition.setOnFinished(e -> list.remove(ScorePopup.this));
         transition.play();
     }
+
+    // added method for combo popups
+    public static void showForClearRow(ObservableList<Node> list, int scoreBonus, int linesRemoved) {
+        ScorePopup bonusPanel = new ScorePopup("+" + scoreBonus);
+        list.add(bonusPanel);
+        bonusPanel.showScore(list);
+
+        if (linesRemoved >= 2) {
+            String label;
+            if (linesRemoved == 2) label = "DOUBLE";
+            else if (linesRemoved == 3) label = "TRIPLE";
+            else if (linesRemoved == 4) label = "QUAD";
+            else label = "TETRIS";
+            ScorePopup comboPanel = new ScorePopup(label);
+            comboPanel.setLayoutY(bonusPanel.getLayoutY() + 26);
+            list.add(comboPanel);
+            comboPanel.showScore(list);
+        }
+    }
 }
