@@ -6,6 +6,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 public final class OverlayManager {
 
@@ -149,71 +155,58 @@ public final class OverlayManager {
     // start game method with proper overlay flow
     // changed to start normal game method
     public void startNormalGame() {
-        if (startOverlay != null)
-        {
-            hide(startOverlay);
-            if (dynamicStartScreen != null) dynamicStartScreen.stop();
-            controller.stopStartScreenMusic();
-        }
+        prepareForStart();
+        showCountdownThen(() -> {
+            controller.startNormalMode();
+            controller.startGameMusic();
 
-        if (helpOverlay != null) hide(helpOverlay);
-        controller.startNormalMode();
-        controller.startGameMusic();
+            if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+            controller.getIsGameOver().set(false);
 
-        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
-        controller.getIsGameOver().set(false);
+            if (controller.getTimeLine() != null) controller.getTimeLine().play();
+            controller.getIsPause().set(false);
+            controller.setBrickPanelVisible(true);
 
-        if (controller.getTimeLine() != null) controller.getTimeLine().play();
-        controller.getIsPause().set(false);
-        controller.setBrickPanelVisible(true);
-
-        if (gamePanel != null) gamePanel.requestFocus();
+            if (gamePanel != null) gamePanel.requestFocus();
+        });
     }
 
     // start the timed game mode
     public void startTimedGame() {
-        if (startOverlay != null) {
-            hide(startOverlay);
-            if (dynamicStartScreen != null) dynamicStartScreen.stop();
-            controller.stopStartScreenMusic();
-        }
+        prepareForStart();
+        showCountdownThen(() -> {
+            controller.startTimedMode();
+            controller.startGameMusic();
 
-        if (helpOverlay != null) hide(helpOverlay);
-        controller.startTimedMode();
-        controller.startGameMusic();
+            // fixed game being stuck at game over after new high score
+            // fixed game resuming after going to main menu from pause screen
+            if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+            controller.getIsGameOver().set(false);
 
-        // fixed game being stuck at game over after new high score
-        // fixed game resuming after going to main menu from pause screen
-        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
-        controller.getIsGameOver().set(false);
+            if (controller.getTimeLine() != null) controller.getTimeLine().play();
+            controller.getIsPause().set(false);
+            controller.setBrickPanelVisible(true);
 
-        if (controller.getTimeLine() != null) controller.getTimeLine().play();
-        controller.getIsPause().set(false);
-        controller.setBrickPanelVisible(true);
-
-        if (gamePanel != null) gamePanel.requestFocus();
+            if (gamePanel != null) gamePanel.requestFocus();
+        });
     }
 
     // start upside down game mode
     public void startUpsideDownGame() {
-        if (startOverlay != null) {
-            hide(startOverlay);
-            if (dynamicStartScreen != null) dynamicStartScreen.stop();
-            controller.stopStartScreenMusic();
-        }
+        prepareForStart();
+        showCountdownThen(() -> {
+            controller.startUpsideDownMode();
+            controller.startGameMusic();
 
-        if (helpOverlay != null) hide(helpOverlay);
-        controller.startUpsideDownMode();
-        controller.startGameMusic();
+            if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+            controller.getIsGameOver().set(false);
 
-        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
-        controller.getIsGameOver().set(false);
+            if (controller.getTimeLine() != null) controller.getTimeLine().play();
+            controller.getIsPause().set(false);
+            controller.setBrickPanelVisible(true);
 
-        if (controller.getTimeLine() != null) controller.getTimeLine().play();
-        controller.getIsPause().set(false);
-        controller.setBrickPanelVisible(true);
-
-        if (gamePanel != null) gamePanel.requestFocus();
+            if (gamePanel != null) gamePanel.requestFocus();
+        });
     }
 
     // resume game
@@ -291,7 +284,7 @@ public final class OverlayManager {
         if (controller.getTimeLine() != null) controller.getTimeLine().stop();
         controller.stopModeTimer();
         controller.stopGameMusic();
-        
+
         controller.getIsPause().set(true);
         controller.getIsGameOver().set(true);
         show(gameOverOverlay);
@@ -324,5 +317,62 @@ public final class OverlayManager {
             }
             gameOverPanel.setVisible(true);
         }
+    }
+
+    // start game error handling method centralized
+    private void prepareForStart() {
+        if (startOverlay != null)
+        {
+            hide(startOverlay);
+            if (dynamicStartScreen != null) dynamicStartScreen.stop();
+            controller.stopStartScreenMusic();
+        }
+        if (helpOverlay != null) hide(helpOverlay);
+    }
+
+    // show countdown method
+    private void showCountdownThen(Runnable onFinish) {
+        Region anchor = startOverlay != null ? startOverlay : (helpOverlay != null ? helpOverlay : pauseOverlay);
+        Pane parent = anchor != null && anchor.getParent() instanceof Pane ? (Pane) anchor.getParent() : null;
+        if (parent == null) { onFinish.run(); return; }
+
+        StackPane overlay = new StackPane();
+        overlay.setMouseTransparent(true);
+        overlay.prefWidthProperty().bind(parent.widthProperty());
+        overlay.prefHeightProperty().bind(parent.heightProperty());
+
+        Label label = new Label("3");
+        label.getStyleClass().add("titleClass");
+        label.setScaleX(0.4);
+        label.setScaleY(0.4);
+        overlay.getChildren().add(label);
+        StackPane.setAlignment(label, Pos.CENTER);
+
+        parent.getChildren().add(overlay);
+
+        Runnable play1 = () -> playNumber(label, "1", () -> finishCountdown(parent, overlay, onFinish));
+        Runnable play2 = () -> playNumber(label, "2", play1);
+        Runnable play3 = () -> playNumber(label, "3", play2);
+        play3.run();
+    }
+
+    // animation for coutndown
+    private void playNumber(Label label, String text, Runnable next) {
+        label.setText(text);
+        label.setScaleX(0.4);
+        label.setScaleY(0.4);
+        ScaleTransition st = new ScaleTransition(Duration.millis(500), label);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setFromX(0.4);
+        st.setFromY(0.4);
+        st.setToX(1.6);
+        st.setToY(1.6);
+        st.setOnFinished(e -> next.run());
+        st.play();
+    }
+
+    private void finishCountdown(Pane parent, StackPane overlay, Runnable onFinish) {
+        parent.getChildren().remove(overlay);
+        onFinish.run();
     }
 }
