@@ -228,4 +228,40 @@ public class GameRenderer {
         rectangle.setArcHeight(Constants.BRICK_ARC);
         rectangle.setArcWidth(Constants.BRICK_ARC);
     }
+
+    // method to apply the pulse on the bricks
+    public void pulseLandedBlocks(int[][] brickData, int xPosition, int yPosition) {
+        if (displayMatrix == null || brickData == null)
+        {
+            return;
+        }
+
+        int boardHeight = displayMatrix.length;
+        int boardWidth = displayMatrix[0].length;
+
+        for (int i = 0; i < brickData.length; i++)
+        {
+            for (int j = 0; j < brickData[i].length; j++)
+            {
+                if (brickData[i][j] != 0) {
+                    int logicRow = yPosition + i;
+                    int logicCol = xPosition + j;
+
+                    if (logicRow >= 0 && logicRow < boardHeight &&
+                            logicCol >= 0 && logicCol < boardWidth)
+                    {
+
+                        int visualRow = isUpsideDown ? (boardHeight - 1 - logicRow) : logicRow;
+                        Rectangle rect = displayMatrix[visualRow][logicCol];
+
+                        if (rect != null)
+                        {
+                            javafx.animation.SequentialTransition pulse = Effects.createPulseEffect(rect);
+                            pulse.play();
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

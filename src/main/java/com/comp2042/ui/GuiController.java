@@ -393,7 +393,13 @@ public class GuiController implements Initializable {
         }
     }
 
-    // toggling visibility of ghost prick panel and brick panel
+    // pulse method
+    public void pulseLandedBlocks(int[][] brickShape, int xPosition, int yPosition) {
+        if (gameRenderer != null && brickShape != null) {
+            gameRenderer.pulseLandedBlocks(brickShape, xPosition, yPosition);
+        }
+    }
+
     public void setBrickPanelVisible(boolean visible) {
         if (brickPanel != null) brickPanel.setVisible(visible);
         if (!visible && ghostBrickHandler != null) ghostBrickHandler.clear();

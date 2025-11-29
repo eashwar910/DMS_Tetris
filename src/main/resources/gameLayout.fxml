@@ -88,7 +88,7 @@
                 </VBox>
                 <VBox alignment="CENTER" spacing="8">
                     <Button fx:id="raceButton" text="Timed Blitz" styleClass="ipad-dark-grey" prefWidth="150" />
-                    <Button fx:id="mineButton" text="Tetro-Mine-O" styleClass="ipad-dark-grey" prefWidth="150" />
+                    <Button fx:id="mineButton" text="BOTTOMS UP !" styleClass="ipad-dark-grey" prefWidth="150" />
                 </VBox>
             </HBox>
         </VBox>

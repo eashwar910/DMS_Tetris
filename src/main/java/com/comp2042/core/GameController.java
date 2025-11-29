@@ -100,6 +100,12 @@ public class GameController implements InputEventListener {
             dropped++;
         }
 
+        // capture brick info before merging for pulse effect
+        ViewData landedBrick = board.getViewData();
+        int[][] brickShape = landedBrick.getBrickData();
+        int xPos = landedBrick.getxPosition();
+        int yPos = landedBrick.getyPosition();
+
         board.mergeBrickToBackground();
         ClearRow clearRow = board.clearRows();
 
@@ -122,6 +128,10 @@ public class GameController implements InputEventListener {
         }
 
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
+
+        // trigger pulse effect for hard drop
+        viewGuiController.pulseLandedBlocks(brickShape, xPos, yPos);
+
         return new DownData(clearRow, board.getViewData());
     }
 }
