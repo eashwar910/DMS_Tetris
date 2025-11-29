@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.comp2042.core.Constants;
+import com.comp2042.core.GameModeHandler;
+import com.comp2042.core.GameModeHandler.GameMode;
 import com.comp2042.events.EventSource;
 import com.comp2042.events.EventType;
 import com.comp2042.events.MoveEvent;
@@ -12,17 +14,16 @@ import com.comp2042.input.KeyboardInputManager;
 import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -36,6 +37,7 @@ import javafx.util.Duration;
 public class GuiController implements Initializable {
 
     private GameRenderer gameRenderer;
+    private GhostBrickHandler ghostBrickHandler;
 
     @FXML
     private GridPane gamePanel;
@@ -97,9 +99,34 @@ public class GuiController implements Initializable {
     @FXML
     private Label highScoreValueLabel;
 
+    @FXML
+    private DynamicStartScreen dynamicStartScreen;
+
+    @FXML
+    private javafx.scene.image.ImageView titleImage;
+
+    @FXML
+    private Label linesValueLabel;
+
+    @FXML
+    private Label levelValueLabel;
+
+    @FXML
+    private javafx.scene.control.Button raceButton;
+
+    @FXML
+    private javafx.scene.control.Button mineButton;
+
+    @FXML
+    private Label timerLabel;
+
     private InputEventListener eventListener;
 
     private Timeline timeLine;
+
+    private Timeline modeTimer;
+
+    private GameModeHandler modeHandler;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
@@ -110,9 +137,13 @@ public class GuiController implements Initializable {
 
     private final DoubleProperty gamePanelSceneY = new SimpleDoubleProperty();
 
-    private boolean helpFromStart = false;
-
     private OverlayManager overlayManager;
+
+    private MusicManager musicManager;
+
+    private int[][] lastBoardMatrix;
+
+    private ViewData lastViewData;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -139,8 +170,47 @@ public class GuiController implements Initializable {
         // use new class
         gamePanel.setOnKeyPressed(new KeyboardInputManager(this, gameRenderer));
 
-        // setup overlays using method from new class
-        setupOverlays();
+        musicManager = new MusicManager("theme.mp3");
+
+        // use methods from overlay manager to set up overlays
+        overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
+        overlayManager.setup(
+                this,
+                dynamicStartScreen,
+                gamePanel,
+                playButton,
+                raceButton,
+                mineButton,
+                helpButton,
+                closeHelpButton,
+                pauseScreen,
+                gameOverPanel
+        );
+
+        // setup game mode handler
+        modeHandler = new GameModeHandler(
+                timerLabel,
+                () -> overlayManager.gameOver(false),
+                mode -> {
+                    // logic to toggle renderer mode based on game mode
+                    boolean isUpsideDown = (mode == GameMode.BOTTOMS_UP);
+                    setUpsideDownMode(isUpsideDown);
+
+                    if (eventListener instanceof com.comp2042.core.GameController gc)
+                    {
+                        gc.setMode(mode);
+                    }
+                }
+        );
+
+        // used a title logo image found online, added it to fxml file using imageview
+        // bind title image property to start overlay
+        if (titleImage != null && startOverlay != null)
+        {
+            titleImage.fitWidthProperty().bind(startOverlay.widthProperty().multiply(0.6));
+            titleImage.setSmooth(true);
+            titleImage.setCache(true);
+        }
 
         SceneManager.centerGameBoard(gameBoardContainer, gameBoard, gamePanel, gamePanelSceneX, gamePanelSceneY);
 
@@ -155,67 +225,14 @@ public class GuiController implements Initializable {
         return this.eventListener;
     }
 
-    private void setupOverlays() {
-        if (gameOverOverlay != null) gameOverOverlay.setVisible(false);
+    // helper method to switch modes in renderers
+    public void setUpsideDownMode(boolean enable) {
+        if (gameRenderer != null) gameRenderer.setUpsideDown(enable);
+        if (ghostBrickHandler != null) ghostBrickHandler.setUpsideDown(enable);
 
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.setRestartEventHandler(this::newGame);
-            gameOverPanel.setExitEventHandler(e -> quitGame());
-        }
-
-        overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
-
-        if (startOverlay != null)
-        {
-            isPause.set(true);
-            overlayManager.bindOverlayFill(startOverlay);
-            overlayManager.showStart();
-        }
-
-        if (playButton != null) playButton.setOnAction(e -> startGame());
-
-        if (helpOverlay != null)
-        {
-            overlayManager.bindOverlayFill(helpOverlay);
-            overlayManager.hideHelp();
-        }
-
-        if (helpButton != null)
-        {
-            helpButton.setOnAction(e -> {
-                helpFromStart = startOverlay != null && startOverlay.isVisible();
-                overlayManager.showHelp();
-            });
-        }
-
-        if (closeHelpButton != null)
-        {
-            closeHelpButton.setOnAction(e -> {
-                overlayManager.hideHelp();
-                if (helpFromStart && startOverlay != null) {
-                    overlayManager.showStart();
-                    helpFromStart = false;
-                }
-            });
-        }
-
-        if (pauseScreen != null && groupPause != null)
-        {
-            overlayManager.bindOverlayFill(groupPause);
-            overlayManager.hidePause();
-            pauseScreen.prefWidthProperty().bind(groupPause.widthProperty());
-            pauseScreen.prefHeightProperty().bind(groupPause.heightProperty());
-            pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            pauseScreen.setResumeHandler(e -> resumeGame());
-            pauseScreen.setQuitHandler(e -> quitGame());
-            pauseScreen.setNewGameHandler(this::newGame);
-        }
-
-        if (gameOverOverlay != null)
-        {
-            overlayManager.bindOverlayFill(gameOverOverlay);
-            overlayManager.hideGameOver();
+        // force refresh if we have data, so the screen flips instantly
+        if (lastBoardMatrix != null) {
+            gameRenderer.refreshGameBackground(lastBoardMatrix);
         }
     }
 
@@ -230,30 +247,37 @@ public class GuiController implements Initializable {
             showScorePopup(downData.getClearRow());
             // direct access to renderer because of sonar cube warning
             gameRenderer.refreshBrick(downData.getViewData());
+            updateGhost(downData.getViewData());
         }
         gamePanel.requestFocus();
     }
 
     public void showScorePopup(ClearRow clearRow) {
         if (clearRow != null && clearRow.getLinesRemoved() > 0) {
-            ScorePopup notificationPanel = new ScorePopup("+" + clearRow.getScoreBonus());
-            groupNotification.getChildren().add(notificationPanel);
-            notificationPanel.showScore(groupNotification.getChildren());
+            ScorePopup.showForClearRow(groupNotification.getChildren(), clearRow.getScoreBonus(), clearRow.getLinesRemoved());
         }
     }
 
-    public void togglePause() {
-        if (!isPause.get())
-        {
-            isPause.set(true);
-            if (timeLine != null) timeLine.pause();
-            overlayManager.showPause();
-        }
-        else
-        {
-            resumeGame();
-        }
-    }
+    // used function from overlay manager
+    public void togglePause() { overlayManager.togglePause(); }
+
+    // created wrappers for methods from mode handler (fix later)
+    public void startNormalMode() { modeHandler.startNormal(); }
+
+    // wrapper for new mode (fix later)
+    public void startUpsideDownMode() { modeHandler.startUpsideDown(); }
+
+    public void startTimedMode() { modeHandler.startTimed(); }
+
+    public void pauseModeTimer() { modeHandler.pause(); }
+
+    public void resumeModeTimer() { modeHandler.resume(); }
+
+    public void stopModeTimer() { modeHandler.stop(); }
+
+    public GameMode getCurrentMode() { return modeHandler.getMode(); }
+
+    public void restartCurrentModeTimer() { modeHandler.restartForNewGame(); }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         timeLine = new Timeline(new KeyFrame(
@@ -264,13 +288,55 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Animation.INDEFINITE);
         timeLine.pause();
         gameRenderer.initGameView(boardMatrix, brick);
+        // set up ghost brick handler
+        ghostBrickHandler = new GhostBrickHandler(gamePanel, brickPanel, gamePanelSceneX, gamePanelSceneY, gameRenderer);
+        // ensure ghost handler respects current mode on init
+        ghostBrickHandler.setUpsideDown(modeHandler.getMode() == GameMode.BOTTOMS_UP);
+
+        lastBoardMatrix = boardMatrix;
+        lastViewData = brick;
+        ghostBrickHandler.init(brick);
+        if (startOverlay != null)
+        {
+            setBrickPanelVisible(false);
+        }
+
     }
 
-    public void refreshGameBackground(int[][] board) { gameRenderer.refreshGameBackground(board); }
+    public void refreshGameBackground(int[][] board) {
+        lastBoardMatrix = board;
+        gameRenderer.refreshGameBackground(board);
+        if (lastViewData != null && ghostBrickHandler != null)
+        {
+            ghostBrickHandler.update(lastViewData, lastBoardMatrix);
+        }
+    }
+
+    public void refreshGameBackground(int[][] board, ViewData brick) { gameRenderer.refreshGameBackground(board); lastBoardMatrix = board; lastViewData = brick; }
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
+
+    public void startGameMusic() { if (musicManager != null) musicManager.playLoopFromStart(); }
+
+    public void pauseGameMusic() { if (musicManager != null) musicManager.pause(); }
+
+    public void resumeGameMusic() { if (musicManager != null) musicManager.resume(); }
+
+    public void stopGameMusic() { if (musicManager != null) musicManager.stop(); }
+
+    public void restartGameMusic() { if (musicManager != null) musicManager.restart(); }
+
+    public void startStartScreenMusic() { if (musicManager != null) musicManager.startStartLoop("start_screen.mp3"); }
+
+    public void stopStartScreenMusic() { if (musicManager != null) musicManager.stopStart(); }
+
+    public void playGameOverSound() { if (musicManager != null) musicManager.playOnce("game_over.mp3"); }
+
+    public void playHighScoreSound() { if (musicManager != null) musicManager.playOnce("high_score.mp3"); }
+
+    public void stopOverlaySound() { if (musicManager != null) musicManager.stopFx(); }
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreValueLabel != null && integerProperty != null) {
@@ -284,44 +350,88 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void gameOver() {
-        if (timeLine != null) timeLine.stop();
-        isPause.set(true);
-        isGameOver.set(true);
-        overlayManager.showGameOver();
-        if (gameOverPanel != null) gameOverPanel.setVisible(true);
-    }
-
-    public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
-        gameOverPanel.setVisible(false);
-        overlayManager.hideGameOver();
-        overlayManager.hidePause();
-        eventListener.createNewGame();
-        gamePanel.requestFocus();
-        if (startOverlay != null && startOverlay.isVisible()) {
-            timeLine.pause();
-        } else {
-            timeLine.play();
+    public void bindLinesCleared(IntegerProperty integerProperty) {
+        if (linesValueLabel != null && integerProperty != null) {
+            linesValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
         }
-        isPause.set(false);
-        isGameOver.set(false);
     }
 
-    private void startGame() {
-        if (startOverlay != null) overlayManager.hideStart();
-        overlayManager.hideHelp();
-        if (timeLine != null) timeLine.play();
-        isPause.set(false);
-        gamePanel.requestFocus();
+    public void bindLevelValue(IntegerProperty integerProperty) {
+        if (levelValueLabel != null && integerProperty != null) {
+            levelValueLabel.textProperty().bind(Bindings.format("%d", integerProperty));
+        }
     }
 
-    private void resumeGame() {
-        isPause.set(false);
-        if (timeLine != null) timeLine.play();
-        overlayManager.hidePause();
-        gamePanel.requestFocus();
+    // full method moved to overlay manager
+    public void gameOver(boolean newHighScore) { overlayManager.gameOver(newHighScore); }
+
+    // set up getters
+    public void setOverlayManager(OverlayManager overlayManager) { this.overlayManager = overlayManager; }
+    public OverlayManager getOverlayManager() { return overlayManager; }
+    public Timeline getTimeLine() { return timeLine; }
+    public AnchorPane getStartOverlay() { return startOverlay; }
+    public BooleanProperty getIsPause() { return isPause; }
+    public BooleanProperty getIsGameOver() { return isGameOver; }
+
+    public void bindLevel(IntegerProperty integerProperty) {
+        if (integerProperty == null) return;
+        integerProperty.addListener((obs, oldVal, newVal) -> updateFallInterval(newVal.intValue()));
+        updateFallInterval(integerProperty.get());
     }
 
-    private void quitGame() { Platform.exit(); }
+    // updating ghost brick every brick (refactor later !)
+    public void updateGhost(ViewData brick) {
+        lastViewData = brick;
+        boolean show = isPlaying() && !(startOverlay != null && startOverlay.isVisible());
+        if (ghostBrickHandler != null && lastBoardMatrix != null && show)
+        {
+            ghostBrickHandler.update(brick, lastBoardMatrix);
+        }
+        else if (ghostBrickHandler != null)
+        {
+            ghostBrickHandler.clear();
+        }
+    }
+
+    // pulse method
+    public void pulseLandedBlocks(int[][] brickShape, int xPosition, int yPosition) {
+        if (gameRenderer != null && brickShape != null) {
+            gameRenderer.pulseLandedBlocks(brickShape, xPosition, yPosition);
+        }
+    }
+
+    public void setBrickPanelVisible(boolean visible) {
+        if (brickPanel != null) brickPanel.setVisible(visible);
+        if (!visible && ghostBrickHandler != null) ghostBrickHandler.clear();
+    }
+
+    private void updateFallInterval(int level) {
+        double ms;
+        if (level <= 1)
+        {
+            ms = Constants.FALL_INTERVAL_MS;
+        }
+        else
+        {
+            double base = Constants.BASE_TIME;
+            double dec = Constants.TIME_DECREMENT;
+            double t = Math.pow(Math.max(0.0, base - ((level - 1) * dec)), Math.max(0, level - 1));
+            ms = Math.max(Constants.MIN_FALL_INTERVAL_MS, t * 1000.0);
+        }
+        boolean wasRunning = timeLine != null && timeLine.getStatus() == Animation.Status.RUNNING;
+        if (timeLine != null)
+        {
+            timeLine.stop();
+            timeLine.getKeyFrames().setAll(new KeyFrame(
+                    Duration.millis(ms),
+                    ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+            ));
+            timeLine.setCycleCount(Animation.INDEFINITE);
+            if (wasRunning && !isPause.get() && !isGameOver.get())
+            {
+                timeLine.play();
+            }
+        }
+    }
+
 }

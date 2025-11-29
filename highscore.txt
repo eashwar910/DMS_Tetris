@@ -1,1 +1,3 @@
-2783
+normal=3255
+timed=2940
+bottomsUp=11988

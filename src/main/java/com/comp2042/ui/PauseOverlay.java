@@ -1,12 +1,12 @@
 package com.comp2042.ui;
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.control.Button;
-import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Color;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 
 public class PauseOverlay extends BorderPane {
@@ -32,42 +32,26 @@ public class PauseOverlay extends BorderPane {
         VBox optionBox = new VBox(20);
         optionBox.setStyle("-fx-alignment: center;");
 
-
-        // Creating the Resume button
-        resumeButton = new Button("Resume Game");
+        // set up resume button
+        resumeButton = new Button("RESUME");
         resumeButton.getStyleClass().add("ipad-dark-grey");
         resumeButton.setPrefWidth(200);
         resumeButton.setPrefHeight(50);
-        resumeButton.setOnAction(e -> {
-            if (resumeHandler != null)
-            {
-                resumeHandler.handle(e);
-            }
-        });
+        resumeButton.setOnAction(e -> { if (resumeHandler != null) resumeHandler.handle(e); });
 
-        // Creating the Quit button
-        quitButton = new Button("Quit Game");
+        // set up the quit button
+        quitButton = new Button("MAIN MENU");
         quitButton.getStyleClass().add("ipad-dark-grey");
         quitButton.setPrefWidth(200);
         quitButton.setPrefHeight(50);
-        quitButton.setOnAction(e -> {
-            if (quitHandler != null)
-            {
-                quitHandler.handle(e);
-            }
-        });
+        quitButton.setOnAction(e -> { if (quitHandler != null) quitHandler.handle(e); });
 
-        // Creating the New Game button
+        // setup new game button
         newgameButton = new Button("New Game");
         newgameButton.getStyleClass().add("ipad-dark-grey");
         newgameButton.setPrefWidth(200);
         newgameButton.setPrefHeight(50);
-        newgameButton.setOnAction(e -> {
-            if (newgameHandler != null)
-            {
-                newgameHandler.handle(e);
-            }
-        });
+        newgameButton.setOnAction(e -> { if (newgameHandler != null) newgameHandler.handle(e); });
 
         optionBox.getChildren().addAll(resumeButton, quitButton, newgameButton);
         this.setCenter(optionBox);
