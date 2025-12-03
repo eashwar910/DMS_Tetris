@@ -79,8 +79,8 @@ public final class OverlayManager {
         if (gameOverOverlay != null) gameOverOverlay.setVisible(false);
 
         if (gameOverPanel != null) {
-            gameOverPanel.setRestartEventHandler(this::newGame);
-            gameOverPanel.setExitEventHandler(e -> quitGame());
+            gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
+            gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
         }
 
         if (startOverlay != null) {
@@ -92,9 +92,9 @@ public final class OverlayManager {
             controller.setBrickPanelVisible(false);
         }
 
-        if (playButton != null) playButton.setOnAction(e -> startNormalGame());
-        if (raceButton != null) raceButton.setOnAction(e -> startTimedGame());
-        if (mineButton != null) mineButton.setOnAction(e -> startUpsideDownGame());
+        if (playButton != null) playButton.setOnAction(e -> { controller.playClick(); startNormalGame(); });
+        if (raceButton != null) raceButton.setOnAction(e -> { controller.playClick(); startTimedGame(); });
+        if (mineButton != null) mineButton.setOnAction(e -> { controller.playClick(); startUpsideDownGame(); });
 
         if (helpOverlay != null) {
             bindOverlayFill(helpOverlay);
@@ -103,6 +103,7 @@ public final class OverlayManager {
 
         if (helpButton != null) {
             helpButton.setOnAction(e -> {
+                controller.playClick();
                 helpFromStart = startOverlay != null && startOverlay.isVisible();
                 show(helpOverlay);
             });
@@ -110,6 +111,7 @@ public final class OverlayManager {
 
         if (closeHelpButton != null) {
             closeHelpButton.setOnAction(e -> {
+                controller.playClick();
                 hide(helpOverlay);
                 if (helpFromStart && startOverlay != null) {
                     show(startOverlay);
@@ -124,9 +126,9 @@ public final class OverlayManager {
             pauseScreen.prefWidthProperty().bind(pauseOverlay.widthProperty());
             pauseScreen.prefHeightProperty().bind(pauseOverlay.heightProperty());
             pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            pauseScreen.setResumeHandler(e -> resumeGame());
-            pauseScreen.setQuitHandler(e -> goToMainMenu());
-            pauseScreen.setNewGameHandler(this::newGame);
+            pauseScreen.setResumeHandler(e -> { controller.playClick(); resumeGame(); });
+            pauseScreen.setQuitHandler(e -> { controller.playClick(); goToMainMenu(); });
+            pauseScreen.setNewGameHandler(e -> { controller.playClick(); newGame(e); });
         }
 
         if (gameOverOverlay != null) {
@@ -295,8 +297,9 @@ public final class OverlayManager {
             {
                 gameOverPanel.setHighScoreMode();
                 controller.playHighScoreSound();
-                gameOverPanel.setRestartEventHandler(this::newGame);
+                gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
                 gameOverPanel.setExitEventHandler(e -> {
+                    controller.playClick();
                     hide(gameOverOverlay);
                     if (startOverlay != null)
                     {
@@ -312,8 +315,8 @@ public final class OverlayManager {
             {
                 gameOverPanel.setDefaultMode();
                 controller.playGameOverSound();
-                gameOverPanel.setRestartEventHandler(this::newGame);
-                gameOverPanel.setExitEventHandler(e -> quitGame());
+                gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
+                gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
             }
             gameOverPanel.setVisible(true);
         }
@@ -321,13 +324,15 @@ public final class OverlayManager {
 
     // start game error handling method centralized
     private void prepareForStart() {
-        if (startOverlay != null)
-        {
+        controller.gameModeTransition();
+        if (startOverlay != null) {
             hide(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.stop();
             controller.stopStartScreenMusic();
         }
         if (helpOverlay != null) hide(helpOverlay);
+        if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
+        controller.getIsGameOver().set(false);
     }
 
     // show countdown method

@@ -125,7 +125,7 @@ public class GameRenderer {
             positionBrickPanel(brick);
         });
 
-        // removed timeline controller
+    // removed timeline controller
     }
 
     // changed to public so gui controller can access
@@ -227,6 +227,53 @@ public class GameRenderer {
         rectangle.setFill(getFillColor(color));
         rectangle.setArcHeight(Constants.BRICK_ARC);
         rectangle.setArcWidth(Constants.BRICK_ARC);
+    }
+
+    // method to cleat the board while switching menus
+    // did this to fix the previous board showing bug while switching game modes
+    public void clearAll() {
+        if (displayMatrix != null) {
+            for (int i = 0; i < displayMatrix.length; i++) {
+                for (int j = 0; j < displayMatrix[i].length; j++) {
+                    displayMatrix[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
+        if (rectangles != null) {
+            for (int i = 0; i < rectangles.length; i++) {
+                for (int j = 0; j < rectangles[i].length; j++) {
+                    rectangles[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
+        if (nextBrickRectangles1 != null) {
+            for (int i = 0; i < nextBrickRectangles1.length; i++) {
+                for (int j = 0; j < nextBrickRectangles1[i].length; j++) {
+                    nextBrickRectangles1[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
+        if (nextBrickRectangles2 != null) {
+            for (int i = 0; i < nextBrickRectangles2.length; i++) {
+                for (int j = 0; j < nextBrickRectangles2[i].length; j++) {
+                    nextBrickRectangles2[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
+        if (nextBrickRectangles3 != null) {
+            for (int i = 0; i < nextBrickRectangles3.length; i++) {
+                for (int j = 0; j < nextBrickRectangles3[i].length; j++) {
+                    nextBrickRectangles3[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
+        if (holdBrickRectangles != null) {
+            for (int i = 0; i < holdBrickRectangles.length; i++) {
+                for (int j = 0; j < holdBrickRectangles[i].length; j++) {
+                    holdBrickRectangles[i][j].setFill(Color.TRANSPARENT);
+                }
+            }
+        }
     }
 
     // method to apply the pulse on the bricks

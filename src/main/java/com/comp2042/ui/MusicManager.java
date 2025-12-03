@@ -3,6 +3,7 @@ package com.comp2042.ui;
 import java.io.File;
 import java.net.URL;
 
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -11,6 +12,7 @@ public final class MusicManager {
     private MediaPlayer gamePlayer;
     private MediaPlayer startPlayer;
     private MediaPlayer fxPlayer;
+    private AudioClip clickClip;
     private final String gamePath;
 
     public MusicManager(String gameFilePath) {
@@ -69,4 +71,18 @@ public final class MusicManager {
     }
 
     public void stopFx() { if (fxPlayer != null) { fxPlayer.stop(); fxPlayer = null; } }
+
+    // method to play sound for click
+    public void playClick() {
+        if (clickClip == null) {
+            URL url = getClass().getClassLoader().getResource("click.wav");
+            if (url != null) {
+                clickClip = new AudioClip(url.toExternalForm());
+            } else {
+                File f = new File("click.wav");
+                if (f.exists()) clickClip = new AudioClip(f.toURI().toString());
+            }
+        }
+        if (clickClip != null) clickClip.play();
+    }
 }

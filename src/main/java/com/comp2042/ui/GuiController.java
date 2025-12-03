@@ -337,6 +337,17 @@ public class GuiController implements Initializable {
     public void playHighScoreSound() { if (musicManager != null) musicManager.playOnce("high_score.mp3"); }
 
     public void stopOverlaySound() { if (musicManager != null) musicManager.stopFx(); }
+    public void playClick() { if (musicManager != null) musicManager.playClick(); }
+
+    // transition between game modes
+    public void gameModeTransition() {
+        if (timeLine != null) timeLine.stop();
+        setBrickPanelVisible(false);
+        if (ghostBrickHandler != null) ghostBrickHandler.clear();
+        if (gameRenderer != null) gameRenderer.clearAll();
+        lastViewData = null;
+        lastBoardMatrix = null;
+    }
 
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreValueLabel != null && integerProperty != null) {
