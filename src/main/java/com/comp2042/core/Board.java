@@ -29,4 +29,6 @@ public interface Board {
     Score getScore();
 
     void newGame();
+
+    void clearHold();
 }

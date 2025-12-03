@@ -195,6 +195,13 @@ public class GameBoard implements Board {
         currentGameMatrix = new int[width][height];
         score.reset();
         brickGenerator.reset();
+        heldBrick = null;
+        holdUsed = false;
         createNewBrick();
+    }
+
+    public void clearHold() {
+        heldBrick = null;
+        holdUsed = false;
     }
 }

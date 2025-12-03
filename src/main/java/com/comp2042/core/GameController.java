@@ -91,6 +91,7 @@ public class GameController implements InputEventListener {
         board.getScore().setMode(mode);
     }
 
+    public void clearHoldBox() { if (board != null) board.clearHold(); }
 
     @Override
     public DownData onHardDropEvent(MoveEvent event) { // created method to handle hard drop event
