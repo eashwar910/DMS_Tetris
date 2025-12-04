@@ -6,16 +6,15 @@ import com.comp2042.input.InputEventListener;
 import com.comp2042.logic.workflow.ClearRow;
 import com.comp2042.logic.workflow.DownData;
 import com.comp2042.logic.workflow.ViewData;
-import com.comp2042.ui.GuiController;
 import com.comp2042.core.GameModeHandler.GameMode;
 
 public class GameController implements InputEventListener {
 
     private Board board = new GameBoard(Constants.BOARD_ROWS, Constants.BOARD_COLS);
 
-    private final GuiController viewGuiController;
+    private final GameEventListener viewGuiController;
 
-    public GameController(GuiController c) {
+    public GameController(GameEventListener c) {
         viewGuiController = c;
         board.createNewBrick();
         viewGuiController.setEventListener(this);
