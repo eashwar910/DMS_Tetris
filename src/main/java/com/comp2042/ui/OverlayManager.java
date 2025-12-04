@@ -28,6 +28,7 @@ public final class OverlayManager {
     private Button playButton;
     private Button helpButton;
     private Button closeHelpButton;
+    private MusicManager musicManager;
     private boolean helpFromStart = false;
 
     public OverlayManager(Region startOverlay, Region helpOverlay, Region pauseOverlay, Region gameOverOverlay) {
@@ -58,6 +59,7 @@ public final class OverlayManager {
     // centralized overlay setup workflow
     // refactored to reduce Cognitive Complexity
     public void setup(GuiController controller,
+                      MusicManager musicManager,
                       DynamicStartScreen dynamicStartScreen,
                       GridPane gamePanel,
                       Button playButton,
@@ -69,6 +71,7 @@ public final class OverlayManager {
                       GameOverOverlay gameOverPanel) {
 
         this.controller = controller;
+        this.musicManager = musicManager;
         this.dynamicStartScreen = dynamicStartScreen;
         this.gamePanel = gamePanel;
         this.playButton = playButton;
@@ -97,8 +100,9 @@ public final class OverlayManager {
     private void setupGameOverPanel() {
         if (gameOverPanel != null)
         {
-            gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
-            gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
+            // direct musicManager calls
+            gameOverPanel.setRestartEventHandler(e -> { playClick(); newGame(e); });
+            gameOverPanel.setExitEventHandler(e -> { playClick(); quitGame(); });
         }
     }
 
@@ -109,16 +113,19 @@ public final class OverlayManager {
             bindOverlayFill(startOverlay);
             show(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.start();
-            controller.startStartScreenMusic();
+
+            // Direct music call
+            if (musicManager != null) musicManager.startStartLoop("start_screen.mp3");
+
             controller.setBrickPanelVisible(false);
         }
     }
 
     // game button setup method
     private void setupGameButtons(Button playButton, Button raceButton, Button mineButton) {
-        if (playButton != null) playButton.setOnAction(e -> { controller.playClick(); startNormalGame(); });
-        if (raceButton != null) raceButton.setOnAction(e -> { controller.playClick(); startTimedGame(); });
-        if (mineButton != null) mineButton.setOnAction(e -> { controller.playClick(); startUpsideDownGame(); });
+        if (playButton != null) playButton.setOnAction(e -> { playClick(); startNormalGame(); });
+        if (raceButton != null) raceButton.setOnAction(e -> { playClick(); startTimedGame(); });
+        if (mineButton != null) mineButton.setOnAction(e -> { playClick(); startUpsideDownGame(); });
     }
 
     // help overlay setup method
@@ -130,7 +137,7 @@ public final class OverlayManager {
 
         if (helpButton != null) {
             helpButton.setOnAction(e -> {
-                controller.playClick();
+                playClick();
                 helpFromStart = startOverlay != null && startOverlay.isVisible();
                 show(helpOverlay);
             });
@@ -138,7 +145,7 @@ public final class OverlayManager {
 
         if (closeHelpButton != null) {
             closeHelpButton.setOnAction(e -> {
-                controller.playClick();
+                playClick();
                 hide(helpOverlay);
                 if (helpFromStart && startOverlay != null) {
                     show(startOverlay);
@@ -156,9 +163,11 @@ public final class OverlayManager {
             pauseScreen.prefWidthProperty().bind(pauseOverlay.widthProperty());
             pauseScreen.prefHeightProperty().bind(pauseOverlay.heightProperty());
             pauseScreen.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            pauseScreen.setResumeHandler(e -> { controller.playClick(); resumeGame(); });
-            pauseScreen.setQuitHandler(e -> { controller.playClick(); goToMainMenu(); });
-            pauseScreen.setNewGameHandler(e -> { controller.playClick(); newGame(e); });
+
+            // direct music/click calls
+            pauseScreen.setResumeHandler(e -> { playClick(); resumeGame(); });
+            pauseScreen.setQuitHandler(e -> { playClick(); goToMainMenu(); });
+            pauseScreen.setNewGameHandler(e -> { playClick(); newGame(e); });
         }
     }
 
@@ -166,7 +175,8 @@ public final class OverlayManager {
     private void show(Region overlay) {
         if (overlay != null)
         {
-            overlay.setVisible(true); overlay.toFront();
+            overlay.setVisible(true);
+            overlay.toFront();
             if (overlay == startOverlay) {
                 controller.setBrickPanelVisible(false);
             }
@@ -185,7 +195,7 @@ public final class OverlayManager {
         prepareForStart();
         showCountdownThen(() -> {
             controller.startNormalMode();
-            controller.startGameMusic();
+            if (musicManager != null) musicManager.playLoopFromStart();
 
             if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
             controller.getIsGameOver().set(false);
@@ -203,7 +213,7 @@ public final class OverlayManager {
         prepareForStart();
         showCountdownThen(() -> {
             controller.startTimedMode();
-            controller.startGameMusic();
+            if (musicManager != null) musicManager.playLoopFromStart();
 
             // fixed game being stuck at game over after new high score
             // fixed game resuming after going to main menu from pause screen
@@ -223,7 +233,7 @@ public final class OverlayManager {
         prepareForStart();
         showCountdownThen(() -> {
             controller.startUpsideDownMode();
-            controller.startGameMusic();
+            if (musicManager != null) musicManager.playLoopFromStart();
 
             if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
             controller.getIsGameOver().set(false);
@@ -241,7 +251,9 @@ public final class OverlayManager {
         controller.getIsPause().set(false);
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
         controller.resumeModeTimer();
-        controller.resumeGameMusic();
+
+        if (musicManager != null) musicManager.resume();
+
         hide(pauseOverlay);
         if (gamePanel != null) gamePanel.requestFocus();
     }
@@ -256,8 +268,11 @@ public final class OverlayManager {
             if (dynamicStartScreen != null) dynamicStartScreen.start();
             controller.setBrickPanelVisible(false);
             controller.stopModeTimer();
-            controller.stopGameMusic();
-            controller.startStartScreenMusic();
+
+            if (musicManager != null) {
+                musicManager.stop();
+                musicManager.startStartLoop("start_screen.mp3");
+            }
         }
     }
 
@@ -267,7 +282,9 @@ public final class OverlayManager {
             controller.getIsPause().set(true);
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
             controller.pauseModeTimer();
-            controller.pauseGameMusic();
+
+            if (musicManager != null) musicManager.pause();
+
             show(pauseOverlay);
         } else {
             resumeGame();
@@ -288,8 +305,11 @@ public final class OverlayManager {
         hide(pauseOverlay);
         controller.getEventListener().createNewGame();
         controller.restartCurrentModeTimer();
-        controller.stopOverlaySound();
-        controller.restartGameMusic();
+
+        if (musicManager != null) {
+            musicManager.stopFx();
+            musicManager.restart();
+        }
 
         if (gamePanel != null) gamePanel.requestFocus();
         if (startOverlay != null && startOverlay.isVisible())
@@ -326,7 +346,7 @@ public final class OverlayManager {
     private void stopRunningGame() {
         if (controller.getTimeLine() != null) controller.getTimeLine().stop();
         controller.stopModeTimer();
-        controller.stopGameMusic();
+        if (musicManager != null) musicManager.stop();
     }
 
     // game over screen choosing method
@@ -344,29 +364,29 @@ public final class OverlayManager {
     // new high score method
     private void setupHighScoreGameOver() {
         gameOverPanel.setHighScoreMode();
-        controller.playHighScoreSound();
-        gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
+        if (musicManager != null) musicManager.playOnce("high_score.mp3");
+        gameOverPanel.setRestartEventHandler(e -> { playClick(); newGame(e); });
         gameOverPanel.setExitEventHandler(e -> handleHighScoreExit());
     }
 
     // normal game over method
     private void setupStandardGameOver() {
         gameOverPanel.setDefaultMode();
-        controller.playGameOverSound();
-        gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
-        gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
+        if (musicManager != null) musicManager.playOnce("game_over.mp3");
+        gameOverPanel.setRestartEventHandler(e -> { playClick(); newGame(e); });
+        gameOverPanel.setExitEventHandler(e -> { playClick(); quitGame(); });
     }
 
     // high score exit menu method
     private void handleHighScoreExit() {
-        controller.playClick();
+        playClick();
         hide(gameOverOverlay);
         if (startOverlay != null) {
             show(startOverlay);
             controller.getIsPause().set(true);
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
             if (dynamicStartScreen != null) dynamicStartScreen.start();
-            controller.startStartScreenMusic();
+            if (musicManager != null) musicManager.startStartLoop("start_screen.mp3");
         }
     }
 
@@ -376,7 +396,7 @@ public final class OverlayManager {
         if (startOverlay != null) {
             hide(startOverlay);
             if (dynamicStartScreen != null) dynamicStartScreen.stop();
-            controller.stopStartScreenMusic();
+            if (musicManager != null) musicManager.stopStart();
         }
         if (helpOverlay != null) hide(helpOverlay);
         if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
@@ -385,9 +405,12 @@ public final class OverlayManager {
 
     // show countdown method
     private void showCountdownThen(Runnable onFinish) {
-        Region anchor = startOverlay != null ? startOverlay : (helpOverlay != null ? helpOverlay : pauseOverlay);
-        Pane parent = anchor != null && anchor.getParent() instanceof Pane ? (Pane) anchor.getParent() : null;
-        if (parent == null) { onFinish.run(); return; }
+        Region anchor = startOverlay != null ?
+                startOverlay : (helpOverlay != null ? helpOverlay : pauseOverlay);
+        Pane parent = anchor != null && anchor.getParent() instanceof Pane ?
+                (Pane) anchor.getParent() : null;
+        if (parent == null) { onFinish.run(); return;
+        }
 
         StackPane overlay = new StackPane();
         overlay.setMouseTransparent(true);
@@ -427,5 +450,10 @@ public final class OverlayManager {
     private void finishCountdown(Pane parent, StackPane overlay, Runnable onFinish) {
         parent.getChildren().remove(overlay);
         onFinish.run();
+    }
+
+    // helper to clean up code
+    private void playClick() {
+        if (musicManager != null) musicManager.playClick();
     }
 }

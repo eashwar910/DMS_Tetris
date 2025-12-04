@@ -160,8 +160,11 @@ public class GuiController implements Initializable, GameEventListener {
 
         // use methods from overlay manager to set up overlays
         overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
+
+        // pass musicManager here
         overlayManager.setup(
                 this,
+                musicManager,
                 dynamicStartScreen,
                 gamePanel,
                 playButton,
@@ -234,39 +237,14 @@ public class GuiController implements Initializable, GameEventListener {
     // used function from overlay manager
     public void togglePause() { overlayManager.togglePause(); }
 
-    // created wrappers for methods from mode handler (fix later)
-    public void startNormalMode() {
-        gameLoopManager.startNormalMode();
-    }
-
-    // wrapper for new mode (fix later)
-    public void startUpsideDownMode() {
-        gameLoopManager.startUpsideDownMode();
-    }
-
-    public void startTimedMode() {
-        gameLoopManager.startTimedMode();
-    }
-
-    public void pauseModeTimer() {
-        gameLoopManager.pauseModeTimer();
-    }
-
-    public void resumeModeTimer() {
-        gameLoopManager.resumeModeTimer();
-    }
-
-    public void stopModeTimer() {
-        gameLoopManager.stopModeTimer();
-    }
-
-    public GameMode getCurrentMode() {
-        return gameLoopManager.getCurrentMode();
-    }
-
-    public void restartCurrentModeTimer() {
-        gameLoopManager.restartCurrentModeTimer();
-    }
+    public void startNormalMode() { gameLoopManager.startNormalMode(); }
+    public void startUpsideDownMode() { gameLoopManager.startUpsideDownMode(); }
+    public void startTimedMode() { gameLoopManager.startTimedMode(); }
+    public void pauseModeTimer() { gameLoopManager.pauseModeTimer(); }
+    public void resumeModeTimer() { gameLoopManager.resumeModeTimer(); }
+    public void stopModeTimer() { gameLoopManager.stopModeTimer(); }
+    public GameMode getCurrentMode() { return gameLoopManager.getCurrentMode(); }
+    public void restartCurrentModeTimer() { gameLoopManager.restartCurrentModeTimer(); }
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -305,28 +283,6 @@ public class GuiController implements Initializable, GameEventListener {
         this.eventListener = eventListener;
     }
 
-    public void startGameMusic() { if (musicManager != null) musicManager.playLoopFromStart(); }
-
-    public void pauseGameMusic() { if (musicManager != null) musicManager.pause(); }
-
-    public void resumeGameMusic() { if (musicManager != null) musicManager.resume(); }
-
-    public void stopGameMusic() { if (musicManager != null) musicManager.stop(); }
-
-    public void restartGameMusic() { if (musicManager != null) musicManager.restart(); }
-
-    public void startStartScreenMusic() { if (musicManager != null) musicManager.startStartLoop("start_screen.mp3"); }
-
-    public void stopStartScreenMusic() { if (musicManager != null) musicManager.stopStart(); }
-
-    public void playGameOverSound() { if (musicManager != null) musicManager.playOnce("game_over.mp3"); }
-
-    public void playHighScoreSound() { if (musicManager != null) musicManager.playOnce("high_score.mp3"); }
-
-    public void stopOverlaySound() { if (musicManager != null) musicManager.stopFx(); }
-    public void playClick() { if (musicManager != null) musicManager.playClick(); }
-
-    // transition between game modes
     public void gameModeTransition() {
         if (gameLoopManager.getTimeLine() != null) gameLoopManager.getTimeLine().stop();
         setBrickPanelVisible(false);
@@ -415,9 +371,4 @@ public class GuiController implements Initializable, GameEventListener {
         if (brickPanel != null) brickPanel.setVisible(visible);
         if (!visible && ghostBrickHandler != null) ghostBrickHandler.clear();
     }
-
-    private void updateFallInterval(int level) {
-        gameLoopManager.updateFallInterval(level);
-    }
-
 }

@@ -49,7 +49,12 @@ public class GameRenderer {
         this.isUpsideDown = value;
     }
 
-    // refactored to reduce "Cognitive Complexity"
+    // helper to calculate visual row based on mode
+    //refactored to reduce "Cognitive Complexity"
+    private int getVisualRow(int logicRow, int totalHeight) {
+        return isUpsideDown ? (totalHeight - 1 - logicRow) : logicRow;
+    }
+
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = createGrid(boardMatrix.length, boardMatrix[0].length, gamePanel, true);
         rectangles = createGrid(brick.getBrickData().length, brick.getBrickData()[0].length, brickPanel, brick.getBrickData());
@@ -67,12 +72,7 @@ public class GameRenderer {
         int[][] holdData = brick.getHoldBrickData();
         holdBrickRectangles = createGrid(holdData.length, holdData[0].length, holdBrickPanel, holdData);
 
-        // position the brick after scene is laid out
-        Platform.runLater(() -> {
-            positionBrickPanel(brick);
-        });
-
-    // removed timeline controller
+        Platform.runLater(() -> positionBrickPanel(brick));
     }
 
     // createGrid definition for initGameView to handle grid creation
@@ -163,10 +163,8 @@ public class GameRenderer {
 
         for (int i = 0; i < brickHeight; i++)
         {
-            // if upside down, we fill the panel from bottom-to-top
-            // to match the mirrored coordinate system of the main board.
-            int targetRow = isUpsideDown ? (brickHeight - 1 - i) : i;
-
+            // clean logic using helper
+            int targetRow = getVisualRow(i, brickHeight);
             for (int j = 0; j < brick.getBrickData()[i].length; j++)
             {
                 setRectangleData(brick.getBrickData()[i][j], rectangles[targetRow][j]);
@@ -187,10 +185,10 @@ public class GameRenderer {
 
     // aligns logic rows to visual rows based on mode
     public void refreshGameBackground(int[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            // calculate which visual row corresponds to logic row i
-            int visualRow = isUpsideDown ? (board.length - 1 - i) : i;
-
+        int boardHeight = board.length;
+        for (int i = 0; i < boardHeight; i++) {
+            // Clean logic using helper
+            int visualRow = getVisualRow(i, boardHeight);
             for (int j = 0; j < board[i].length; j++) {
                 setRectangleData(board[i][j], displayMatrix[visualRow][j]);
             }
@@ -258,8 +256,8 @@ public class GameRenderer {
         if (logicRow >= 0 && logicRow < boardHeight &&
                 logicCol >= 0 && logicCol < boardWidth)
         {
-
-            int visualRow = isUpsideDown ? (boardHeight - 1 - logicRow) : logicRow;
+            // clean logic using helper
+            int visualRow = getVisualRow(logicRow, boardHeight);
             Rectangle rect = displayMatrix[visualRow][logicCol];
 
             if (rect != null)
