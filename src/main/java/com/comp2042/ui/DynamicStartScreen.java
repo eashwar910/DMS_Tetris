@@ -22,6 +22,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import javafx.animation.Animation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +74,7 @@ public class DynamicStartScreen extends Pane {
 
         spawnTimer = new Timeline(new KeyFrame(Duration.seconds(SPAWN_INTERVAL),
                 e -> spawnTetromino()));
-        spawnTimer.setCycleCount(Timeline.INDEFINITE);
+        spawnTimer.setCycleCount(Animation.INDEFINITE);
     }
 
     private void spawnTetromino() {

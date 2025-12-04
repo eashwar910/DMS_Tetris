@@ -124,8 +124,6 @@ public class GuiController implements Initializable {
 
     private Timeline timeLine;
 
-    private Timeline modeTimer;
-
     private GameModeHandler modeHandler;
 
     private final BooleanProperty isPause = new SimpleBooleanProperty();

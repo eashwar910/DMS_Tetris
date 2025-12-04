@@ -56,6 +56,7 @@ public final class OverlayManager {
     }
 
     // centralized overlay setup workflow
+    // refactored to reduce Cognitive Complexity
     public void setup(GuiController controller,
                       DynamicStartScreen dynamicStartScreen,
                       GridPane gamePanel,
@@ -78,11 +79,31 @@ public final class OverlayManager {
 
         if (gameOverOverlay != null) gameOverOverlay.setVisible(false);
 
-        if (gameOverPanel != null) {
+        // call setup functions
+        setupGameOverPanel();
+        setupStartOverlay();
+        setupGameButtons(playButton, raceButton, mineButton);
+        setupHelpOverlay(helpButton, closeHelpButton);
+        setupPauseOverlay();
+
+        if (gameOverOverlay != null) {
+            bindOverlayFill(gameOverOverlay);
+            hide(gameOverOverlay);
+        }
+    }
+
+    //defining centralised methods
+    // gameover panel setup method
+    private void setupGameOverPanel() {
+        if (gameOverPanel != null)
+        {
             gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
             gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
         }
+    }
 
+    // start overlay setup
+    private void setupStartOverlay() {
         if (startOverlay != null) {
             controller.getIsPause().set(true);
             bindOverlayFill(startOverlay);
@@ -91,11 +112,17 @@ public final class OverlayManager {
             controller.startStartScreenMusic();
             controller.setBrickPanelVisible(false);
         }
+    }
 
+    // game button setup method
+    private void setupGameButtons(Button playButton, Button raceButton, Button mineButton) {
         if (playButton != null) playButton.setOnAction(e -> { controller.playClick(); startNormalGame(); });
         if (raceButton != null) raceButton.setOnAction(e -> { controller.playClick(); startTimedGame(); });
         if (mineButton != null) mineButton.setOnAction(e -> { controller.playClick(); startUpsideDownGame(); });
+    }
 
+    // help overlay setup method
+    private void setupHelpOverlay(Button helpButton, Button closeHelpButton) {
         if (helpOverlay != null) {
             bindOverlayFill(helpOverlay);
             hide(helpOverlay);
@@ -119,7 +146,10 @@ public final class OverlayManager {
                 }
             });
         }
+    }
 
+    // pause overlay setup method
+    private void setupPauseOverlay() {
         if (pauseScreen != null && pauseOverlay != null) {
             bindOverlayFill(pauseOverlay);
             hide(pauseOverlay);
@@ -129,11 +159,6 @@ public final class OverlayManager {
             pauseScreen.setResumeHandler(e -> { controller.playClick(); resumeGame(); });
             pauseScreen.setQuitHandler(e -> { controller.playClick(); goToMainMenu(); });
             pauseScreen.setNewGameHandler(e -> { controller.playClick(); newGame(e); });
-        }
-
-        if (gameOverOverlay != null) {
-            bindOverlayFill(gameOverOverlay);
-            hide(gameOverOverlay);
         }
     }
 
@@ -281,44 +306,67 @@ public final class OverlayManager {
         controller.getIsGameOver().set(false);
     }
 
+    // refactored to reduce Cognitive Complexity
     // game over overlay
     public void gameOver(boolean newHighScore) {
-        if (controller.getTimeLine() != null) controller.getTimeLine().stop();
-        controller.stopModeTimer();
-        controller.stopGameMusic();
+        stopRunningGame();
 
         controller.getIsPause().set(true);
         controller.getIsGameOver().set(true);
         show(gameOverOverlay);
 
-        if (gameOverPanel != null)
-        {
-            if (newHighScore)
-            {
-                gameOverPanel.setHighScoreMode();
-                controller.playHighScoreSound();
-                gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
-                gameOverPanel.setExitEventHandler(e -> {
-                    controller.playClick();
-                    hide(gameOverOverlay);
-                    if (startOverlay != null)
-                    {
-                        show(startOverlay);
-                        controller.getIsPause().set(true);
-                        if (controller.getTimeLine() != null) controller.getTimeLine().pause();
-                        if (dynamicStartScreen != null) dynamicStartScreen.start();
-                        controller.startStartScreenMusic();
-                    }
-                });
-            }
-            else
-            {
-                gameOverPanel.setDefaultMode();
-                controller.playGameOverSound();
-                gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
-                gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
-            }
+        if (gameOverPanel != null) {
+            configureGameOverScreen(newHighScore);
             gameOverPanel.setVisible(true);
+        }
+    }
+
+    // split the loops to methods
+    // metho to stop running game and other entities that its bound to
+    private void stopRunningGame() {
+        if (controller.getTimeLine() != null) controller.getTimeLine().stop();
+        controller.stopModeTimer();
+        controller.stopGameMusic();
+    }
+
+    // game over screen choosing method
+    private void configureGameOverScreen(boolean newHighScore) {
+        if (newHighScore)
+        {
+            setupHighScoreGameOver();
+        }
+        else
+        {
+            setupStandardGameOver();
+        }
+    }
+
+    // new high score method
+    private void setupHighScoreGameOver() {
+        gameOverPanel.setHighScoreMode();
+        controller.playHighScoreSound();
+        gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
+        gameOverPanel.setExitEventHandler(e -> handleHighScoreExit());
+    }
+
+    // normal game over method
+    private void setupStandardGameOver() {
+        gameOverPanel.setDefaultMode();
+        controller.playGameOverSound();
+        gameOverPanel.setRestartEventHandler(e -> { controller.playClick(); newGame(e); });
+        gameOverPanel.setExitEventHandler(e -> { controller.playClick(); quitGame(); });
+    }
+
+    // high score exit menu method
+    private void handleHighScoreExit() {
+        controller.playClick();
+        hide(gameOverOverlay);
+        if (startOverlay != null) {
+            show(startOverlay);
+            controller.getIsPause().set(true);
+            if (controller.getTimeLine() != null) controller.getTimeLine().pause();
+            if (dynamicStartScreen != null) dynamicStartScreen.start();
+            controller.startStartScreenMusic();
         }
     }
 

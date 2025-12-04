@@ -6,7 +6,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MatrixOperations {
 
@@ -113,7 +112,7 @@ public class MatrixOperations {
     }
 
     public static List<int[][]> deepCopyList(List<int[][]> list){
-        return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
+        return list.stream().map(MatrixOperations::copy).toList(); // sonarqube fix
     }
 
     private static int getWidth(int[][] matrix) {

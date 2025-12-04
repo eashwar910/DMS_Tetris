@@ -49,76 +49,23 @@ public class GameRenderer {
         this.isUpsideDown = value;
     }
 
+    // refactored to reduce "Cognitive Complexity"
     public void initGameView(int[][] boardMatrix, ViewData brick) {
-        displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
-        for (int i = 0; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[i].length; j++) {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                rectangle.setFill(Color.TRANSPARENT);
-                displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i);
-            }
-        }
+        displayMatrix = createGrid(boardMatrix.length, boardMatrix[0].length, gamePanel, true);
+        rectangles = createGrid(brick.getBrickData().length, brick.getBrickData()[0].length, brickPanel, brick.getBrickData());
 
-        rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                // FIXED: changed private to public
-                rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
-                rectangles[i][j] = rectangle;
-                brickPanel.add(rectangle, j, i);
-            }
-        }
-
-        // gets the next three bricks data and recreates the block and adds it to the panels
         int[][][] nextBrickDataArr = brick.getNextBrickData();
 
+        // used a centralized helper function - createGrid
         // first next brick (right next)
-        nextBrickRectangles1 = new Rectangle[nextBrickDataArr[0].length][nextBrickDataArr[0][0].length];
-        for (int i = 0; i < nextBrickDataArr[0].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[0][i].length; j++) {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                rectangle.setFill(getFillColor(nextBrickDataArr[0][i][j]));
-                nextBrickRectangles1[i][j] = rectangle;
-                nextBrickPanel1.add(rectangle, j, i);
-            }
-        }
-
+        nextBrickRectangles1 = createGrid(nextBrickDataArr[0].length, nextBrickDataArr[0][0].length, nextBrickPanel1, nextBrickDataArr[0]);
         // second next brick
-        nextBrickRectangles2 = new Rectangle[nextBrickDataArr[1].length][nextBrickDataArr[1][0].length];
-        for (int i = 0; i < nextBrickDataArr[1].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[1][i].length; j++) {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                rectangle.setFill(getFillColor(nextBrickDataArr[1][i][j]));
-                nextBrickRectangles2[i][j] = rectangle;
-                nextBrickPanel2.add(rectangle, j, i);
-            }
-        }
-
+        nextBrickRectangles2 = createGrid(nextBrickDataArr[1].length, nextBrickDataArr[1][0].length, nextBrickPanel2, nextBrickDataArr[1]);
         // third next brick
-        nextBrickRectangles3 = new Rectangle[nextBrickDataArr[2].length][nextBrickDataArr[2][0].length];
-        for (int i = 0; i < nextBrickDataArr[2].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[2][i].length; j++) {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                rectangle.setFill(getFillColor(nextBrickDataArr[2][i][j]));
-                nextBrickRectangles3[i][j] = rectangle;
-                nextBrickPanel3.add(rectangle, j, i);
-            }
-        }
+        nextBrickRectangles3 = createGrid(nextBrickDataArr[2].length, nextBrickDataArr[2][0].length, nextBrickPanel3, nextBrickDataArr[2]);
 
         int[][] holdData = brick.getHoldBrickData();
-        holdBrickRectangles = new Rectangle[holdData.length][holdData[0].length];
-        for (int i = 0; i < holdData.length; i++)
-        {
-            for (int j = 0; j < holdData[i].length; j++)
-            {
-                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
-                rectangle.setFill(getFillColor(holdData[i][j]));
-                holdBrickRectangles[i][j] = rectangle;
-                holdBrickPanel.add(rectangle, j, i);
-            }
-        }
+        holdBrickRectangles = createGrid(holdData.length, holdData[0].length, holdBrickPanel, holdData);
 
         // position the brick after scene is laid out
         Platform.runLater(() -> {
@@ -126,6 +73,32 @@ public class GameRenderer {
         });
 
     // removed timeline controller
+    }
+
+    // createGrid definition for initGameView to handle grid creation
+    private Rectangle[][] createGrid(int rows, int cols, GridPane panel, Object dataFn) {
+        Rectangle[][] grid = new Rectangle[rows][cols];
+        int[][] colorData = (dataFn instanceof int[][]) ? (int[][]) dataFn : null;
+        boolean isBoard = (boolean) (dataFn instanceof Boolean && (Boolean) dataFn);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                Rectangle rectangle = new Rectangle(Constants.BRICK_SIZE, Constants.BRICK_SIZE);
+                if (isBoard)
+                {
+                    rectangle.setFill(Color.TRANSPARENT);
+                }
+                else if (colorData != null)
+                {
+                    rectangle.setFill(getFillColor(colorData[i][j]));
+                }
+                grid[i][j] = rectangle;
+                panel.add(rectangle, j, i);
+            }
+        }
+        return grid;
     }
 
     // changed to public so gui controller can access
@@ -166,10 +139,26 @@ public class GameRenderer {
         brickPanel.setLayoutY(gamePanelSceneY.get() + yPos * cellHeight);
     }
 
+    // refactored to reduce Cognitive Complexity
     // added internal row mirroring logic
     public void refreshBrick(ViewData brick) {
         positionBrickPanel(brick);
 
+        // update main brick (contains specific mirroring logic)
+        updateActiveBrick(brick);
+
+        // update next bricks
+        int[][][] nextBrickDataArr = brick.getNextBrickData();
+        updateGrid(nextBrickDataArr[0], nextBrickRectangles1);
+        updateGrid(nextBrickDataArr[1], nextBrickRectangles2);
+        updateGrid(nextBrickDataArr[2], nextBrickRectangles3);
+
+        // update hold brick
+        updateGrid(brick.getHoldBrickData(), holdBrickRectangles);
+    }
+
+    // helper for refreshBrick to handle the active brick's specific mirroring logic
+    private void updateActiveBrick(ViewData brick) {
         int brickHeight = brick.getBrickData().length;
 
         for (int i = 0; i < brickHeight; i++)
@@ -183,29 +172,15 @@ public class GameRenderer {
                 setRectangleData(brick.getBrickData()[i][j], rectangles[targetRow][j]);
             }
         }
+    }
 
-        int[][][] nextBrickDataArr = brick.getNextBrickData();
-
-        for (int i = 0; i < nextBrickDataArr[0].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[0][i].length; j++) {
-                setRectangleData(nextBrickDataArr[0][i][j], nextBrickRectangles1[i][j]);
-            }
-        }
-        for (int i = 0; i < nextBrickDataArr[1].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[1][i].length; j++) {
-                setRectangleData(nextBrickDataArr[1][i][j], nextBrickRectangles2[i][j]);
-            }
-        }
-        for (int i = 0; i < nextBrickDataArr[2].length; i++) {
-            for (int j = 0; j < nextBrickDataArr[2][i].length; j++) {
-                setRectangleData(nextBrickDataArr[2][i][j], nextBrickRectangles3[i][j]);
-            }
-        }
-
-        int[][] holdData = brick.getHoldBrickData();
-        for (int i = 0; i < holdData.length; i++) {
-            for (int j = 0; j < holdData[i].length; j++) {
-                setRectangleData(holdData[i][j], holdBrickRectangles[i][j]);
+    // helper for refreshBrick to handle standard grids
+    private void updateGrid(int[][] data, Rectangle[][] gridRects) {
+        for (int i = 0; i < data.length; i++)
+        {
+            for (int j = 0; j < data[i].length; j++)
+            {
+                setRectangleData(data[i][j], gridRects[i][j]);
             }
         }
     }
@@ -229,53 +204,33 @@ public class GameRenderer {
         rectangle.setArcWidth(Constants.BRICK_ARC);
     }
 
+    // refactored to reduce Cognitive Complexity
     // method to cleat the board while switching menus
     // did this to fix the previous board showing bug while switching game modes
     public void clearAll() {
-        if (displayMatrix != null) {
-            for (int i = 0; i < displayMatrix.length; i++) {
-                for (int j = 0; j < displayMatrix[i].length; j++) {
-                    displayMatrix[i][j].setFill(Color.TRANSPARENT);
-                }
-            }
-        }
-        if (rectangles != null) {
-            for (int i = 0; i < rectangles.length; i++) {
-                for (int j = 0; j < rectangles[i].length; j++) {
-                    rectangles[i][j].setFill(Color.TRANSPARENT);
-                }
-            }
-        }
-        if (nextBrickRectangles1 != null) {
-            for (int i = 0; i < nextBrickRectangles1.length; i++) {
-                for (int j = 0; j < nextBrickRectangles1[i].length; j++) {
-                    nextBrickRectangles1[i][j].setFill(Color.TRANSPARENT);
-                }
-            }
-        }
-        if (nextBrickRectangles2 != null) {
-            for (int i = 0; i < nextBrickRectangles2.length; i++) {
-                for (int j = 0; j < nextBrickRectangles2[i].length; j++) {
-                    nextBrickRectangles2[i][j].setFill(Color.TRANSPARENT);
-                }
-            }
-        }
-        if (nextBrickRectangles3 != null) {
-            for (int i = 0; i < nextBrickRectangles3.length; i++) {
-                for (int j = 0; j < nextBrickRectangles3[i].length; j++) {
-                    nextBrickRectangles3[i][j].setFill(Color.TRANSPARENT);
-                }
-            }
-        }
-        if (holdBrickRectangles != null) {
-            for (int i = 0; i < holdBrickRectangles.length; i++) {
-                for (int j = 0; j < holdBrickRectangles[i].length; j++) {
-                    holdBrickRectangles[i][j].setFill(Color.TRANSPARENT);
+        clearGrid(displayMatrix);
+        clearGrid(rectangles);
+        clearGrid(nextBrickRectangles1);
+        clearGrid(nextBrickRectangles2);
+        clearGrid(nextBrickRectangles3);
+        clearGrid(holdBrickRectangles);
+    }
+
+    // Helper to clear a single grid
+    private void clearGrid(Rectangle[][] grid) {
+        if (grid != null)
+        {
+            for (int i = 0; i < grid.length; i++)
+            {
+                for (int j = 0; j < grid[i].length; j++)
+                {
+                    grid[i][j].setFill(Color.TRANSPARENT);
                 }
             }
         }
     }
 
+    // refactored to reduce Cognitive Complexity
     // method to apply the pulse on the bricks
     public void pulseLandedBlocks(int[][] brickData, int xPosition, int yPosition) {
         if (displayMatrix == null || brickData == null)
@@ -283,31 +238,34 @@ public class GameRenderer {
             return;
         }
 
-        int boardHeight = displayMatrix.length;
-        int boardWidth = displayMatrix[0].length;
-
         for (int i = 0; i < brickData.length; i++)
         {
             for (int j = 0; j < brickData[i].length; j++)
             {
-                if (brickData[i][j] != 0) {
-                    int logicRow = yPosition + i;
-                    int logicCol = xPosition + j;
-
-                    if (logicRow >= 0 && logicRow < boardHeight &&
-                            logicCol >= 0 && logicCol < boardWidth)
-                    {
-
-                        int visualRow = isUpsideDown ? (boardHeight - 1 - logicRow) : logicRow;
-                        Rectangle rect = displayMatrix[visualRow][logicCol];
-
-                        if (rect != null)
-                        {
-                            javafx.animation.SequentialTransition pulse = Effects.createPulseEffect(rect);
-                            pulse.play();
-                        }
-                    }
+                if (brickData[i][j] != 0)
+                {
+                    triggerPulse(xPosition + j, yPosition + i);
                 }
+            }
+        }
+    }
+
+    // Helper to trigger pulse on a specific coordinate
+    private void triggerPulse(int logicCol, int logicRow) {
+        int boardHeight = displayMatrix.length;
+        int boardWidth = displayMatrix[0].length;
+
+        if (logicRow >= 0 && logicRow < boardHeight &&
+                logicCol >= 0 && logicCol < boardWidth)
+        {
+
+            int visualRow = isUpsideDown ? (boardHeight - 1 - logicRow) : logicRow;
+            Rectangle rect = displayMatrix[visualRow][logicCol];
+
+            if (rect != null)
+            {
+                javafx.animation.SequentialTransition pulse = Effects.createPulseEffect(rect);
+                pulse.play();
             }
         }
     }
