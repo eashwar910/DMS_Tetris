@@ -134,7 +134,7 @@ public class GhostBrickHandler {
         {
             // problem : block flipped whiel landing
             // fix : inroduced target row variable to check
-            int targetRow = isUpsideDown ? (brickHeight - 1 - i) : i;
+            int targetRow = renderer.getVisualRow(i, brickHeight);
 
             for (int j = 0; j < shape[i].length; j++)
             {

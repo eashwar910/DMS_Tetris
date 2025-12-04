@@ -51,8 +51,9 @@ public class GameRenderer {
 
     // helper to calculate visual row based on mode
     //refactored to reduce "Cognitive Complexity"
-    private int getVisualRow(int logicRow, int totalHeight) {
-        return isUpsideDown ? (totalHeight - 1 - logicRow) : logicRow;
+    public int getVisualRow(int logicRow, int totalHeight) {
+        return isUpsideDown ?
+                (totalHeight - 1 - logicRow) : logicRow;
     }
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
