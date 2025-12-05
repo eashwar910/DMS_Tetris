@@ -234,17 +234,8 @@ public class GuiController implements Initializable, GameEventListener {
         }
     }
 
-    // used function from overlay manager
-    public void togglePause() { overlayManager.togglePause(); }
-
-    public void startNormalMode() { gameLoopManager.startNormalMode(); }
-    public void startUpsideDownMode() { gameLoopManager.startUpsideDownMode(); }
-    public void startTimedMode() { gameLoopManager.startTimedMode(); }
-    public void pauseModeTimer() { gameLoopManager.pauseModeTimer(); }
-    public void resumeModeTimer() { gameLoopManager.resumeModeTimer(); }
-    public void stopModeTimer() { gameLoopManager.stopModeTimer(); }
-    public GameMode getCurrentMode() { return gameLoopManager.getCurrentMode(); }
-    public void restartCurrentModeTimer() { gameLoopManager.restartCurrentModeTimer(); }
+    // turned all wrappers into one getter
+    public GameLoopManager getGameLoopManager() { return gameLoopManager; }
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -254,7 +245,7 @@ public class GuiController implements Initializable, GameEventListener {
         // set up ghost brick handler
         ghostBrickHandler = new GhostBrickHandler(gamePanel, brickPanel, gamePanelSceneX, gamePanelSceneY, gameRenderer);
         // ensure ghost handler respects current mode on init
-        ghostBrickHandler.setUpsideDown(gameLoopManager.modeHandler.getMode() == GameMode.BOTTOMS_UP);
+        ghostBrickHandler.setUpsideDown(gameLoopManager.getModeHandler().getMode() == GameMode.BOTTOMS_UP);
 
         lastBoardMatrix = boardMatrix;
         lastViewData = brick;

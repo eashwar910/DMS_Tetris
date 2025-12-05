@@ -194,7 +194,7 @@ public final class OverlayManager {
     public void startNormalGame() {
         prepareForStart();
         showCountdownThen(() -> {
-            controller.startNormalMode();
+            controller.getGameLoopManager().getModeHandler().startNormal();
             if (musicManager != null) musicManager.playLoopFromStart();
 
             if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
@@ -212,7 +212,7 @@ public final class OverlayManager {
     public void startTimedGame() {
         prepareForStart();
         showCountdownThen(() -> {
-            controller.startTimedMode();
+            controller.getGameLoopManager().getModeHandler().startTimed();
             if (musicManager != null) musicManager.playLoopFromStart();
 
             // fixed game being stuck at game over after new high score
@@ -232,7 +232,7 @@ public final class OverlayManager {
     public void startUpsideDownGame() {
         prepareForStart();
         showCountdownThen(() -> {
-            controller.startUpsideDownMode();
+            controller.getGameLoopManager().getModeHandler().startUpsideDown();
             if (musicManager != null) musicManager.playLoopFromStart();
 
             if (controller.getEventListener() != null) controller.getEventListener().createNewGame();
@@ -250,7 +250,7 @@ public final class OverlayManager {
     public void resumeGame() {
         controller.getIsPause().set(false);
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
-        controller.resumeModeTimer();
+        controller.getGameLoopManager().getModeHandler().resume();
 
         if (musicManager != null) musicManager.resume();
 
@@ -267,7 +267,7 @@ public final class OverlayManager {
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
             if (dynamicStartScreen != null) dynamicStartScreen.start();
             controller.setBrickPanelVisible(false);
-            controller.stopModeTimer();
+            controller.getGameLoopManager().getModeHandler().stop();
 
             if (musicManager != null) {
                 musicManager.stop();
@@ -281,7 +281,7 @@ public final class OverlayManager {
         if (!controller.getIsPause().get()) {
             controller.getIsPause().set(true);
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
-            controller.pauseModeTimer();
+            controller.getGameLoopManager().getModeHandler().pause();
 
             if (musicManager != null) musicManager.pause();
 
@@ -304,7 +304,7 @@ public final class OverlayManager {
         hide(gameOverOverlay);
         hide(pauseOverlay);
         controller.getEventListener().createNewGame();
-        controller.restartCurrentModeTimer();
+        controller.getGameLoopManager().getModeHandler().restartForNewGame();
 
         if (musicManager != null) {
             musicManager.stopFx();
@@ -315,12 +315,12 @@ public final class OverlayManager {
         if (startOverlay != null && startOverlay.isVisible())
         {
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
-            controller.pauseModeTimer();
+            controller.getGameLoopManager().getModeHandler().pause();
         }
         else
         {
             if (controller.getTimeLine() != null) controller.getTimeLine().play();
-            controller.resumeModeTimer();
+            controller.getGameLoopManager().getModeHandler().resume();
         }
         controller.getIsPause().set(false);
         controller.getIsGameOver().set(false);
@@ -345,7 +345,7 @@ public final class OverlayManager {
     // metho to stop running game and other entities that its bound to
     private void stopRunningGame() {
         if (controller.getTimeLine() != null) controller.getTimeLine().stop();
-        controller.stopModeTimer();
+        controller.getGameLoopManager().getModeHandler().stop();
         if (musicManager != null) musicManager.stop();
     }
 

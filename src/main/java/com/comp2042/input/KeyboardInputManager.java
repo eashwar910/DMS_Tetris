@@ -34,7 +34,7 @@ public class KeyboardInputManager implements EventHandler<KeyEvent> {
             controller.getOverlayManager().newGame(null);
         }
         if (keyEvent.getCode() == KeyCode.ESCAPE) {
-            controller.togglePause();
+            controller.getOverlayManager().togglePause();
             keyEvent.consume();
         }
     }
