@@ -115,7 +115,7 @@ public final class OverlayManager {
             if (dynamicStartScreen != null) dynamicStartScreen.start();
 
             // Direct music call
-            if (musicManager != null) musicManager.startStartLoop("start_screen.mp3");
+            if (musicManager != null) musicManager.startStartLoop("sound/start_screen.mp3");
 
             controller.setBrickPanelVisible(false);
         }
@@ -271,7 +271,7 @@ public final class OverlayManager {
 
             if (musicManager != null) {
                 musicManager.stop();
-                musicManager.startStartLoop("start_screen.mp3");
+                musicManager.startStartLoop("sound/start_screen.mp3");
             }
         }
     }
@@ -364,7 +364,7 @@ public final class OverlayManager {
     // new high score method
     private void setupHighScoreGameOver() {
         gameOverPanel.setHighScoreMode();
-        if (musicManager != null) musicManager.playOnce("high_score.mp3");
+        if (musicManager != null) musicManager.playOnce("sound/high_score.mp3");
         gameOverPanel.setRestartEventHandler(e -> { playClick(); newGame(e); });
         gameOverPanel.setExitEventHandler(e -> handleHighScoreExit());
     }
@@ -372,7 +372,7 @@ public final class OverlayManager {
     // normal game over method
     private void setupStandardGameOver() {
         gameOverPanel.setDefaultMode();
-        if (musicManager != null) musicManager.playOnce("game_over.mp3");
+        if (musicManager != null) musicManager.playOnce("sound/game_over.mp3");
         gameOverPanel.setRestartEventHandler(e -> { playClick(); newGame(e); });
         gameOverPanel.setExitEventHandler(e -> { playClick(); quitGame(); });
     }
@@ -386,7 +386,7 @@ public final class OverlayManager {
             controller.getIsPause().set(true);
             if (controller.getTimeLine() != null) controller.getTimeLine().pause();
             if (dynamicStartScreen != null) dynamicStartScreen.start();
-            if (musicManager != null) musicManager.startStartLoop("start_screen.mp3");
+            if (musicManager != null) musicManager.startStartLoop("sound/start_screen.mp3");
         }
     }
 

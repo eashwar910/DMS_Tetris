@@ -75,11 +75,11 @@ public final class MusicManager {
     // method to play sound for click
     public void playClick() {
         if (clickClip == null) {
-            URL url = getClass().getClassLoader().getResource("click.wav");
+            URL url = getClass().getClassLoader().getResource("sound/click.wav");
             if (url != null) {
                 clickClip = new AudioClip(url.toExternalForm());
             } else {
-                File f = new File("click.wav");
+                File f = new File("sound/click.wav");
                 if (f.exists()) clickClip = new AudioClip(f.toURI().toString());
             }
         }

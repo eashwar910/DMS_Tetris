@@ -15,10 +15,10 @@ import javafx.util.Duration;
 
 public class GameLoopManager {
     private final GuiController guiController;
-    public Timeline timeLine;
-    public GameModeHandler modeHandler;
-    public final BooleanProperty isPause = new SimpleBooleanProperty();
-    public final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    private Timeline timeLine;
+    private GameModeHandler modeHandler;
+    private final BooleanProperty isPause = new SimpleBooleanProperty();
+    private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     public GameLoopManager(GuiController guiController) {
         this.guiController = guiController;
@@ -51,38 +51,10 @@ public class GameLoopManager {
 
     public boolean isPlaying() {
         return !isPause.get() && !isGameOver.get();
-    }// created wrappers for methods from mode handler (fix later)
-
-    public void startNormalMode() {
-        modeHandler.startNormal();
-    }// wrapper for new mode (fix later)
-
-    public void startUpsideDownMode() {
-        modeHandler.startUpsideDown();
     }
 
-    public void startTimedMode() {
-        modeHandler.startTimed();
-    }
-
-    public void pauseModeTimer() {
-        modeHandler.pause();
-    }
-
-    public void resumeModeTimer() {
-        modeHandler.resume();
-    }
-
-    public void stopModeTimer() {
-        modeHandler.stop();
-    }
-
-    public GameModeHandler.GameMode getCurrentMode() {
-        return modeHandler.getMode();
-    }
-
-    public void restartCurrentModeTimer() {
-        modeHandler.restartForNewGame();
+    public GameModeHandler getModeHandler() {
+        return modeHandler;
     }
 
     public Timeline getTimeLine() {

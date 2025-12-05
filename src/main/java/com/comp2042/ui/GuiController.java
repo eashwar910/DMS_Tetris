@@ -156,7 +156,7 @@ public class GuiController implements Initializable, GameEventListener {
         // use new class
         gamePanel.setOnKeyPressed(new KeyboardInputManager(this, gameRenderer));
 
-        musicManager = new MusicManager("theme.mp3");
+        musicManager = new MusicManager("sound/theme.mp3");
 
         // use methods from overlay manager to set up overlays
         overlayManager = new OverlayManager(startOverlay, helpOverlay, groupPause, gameOverOverlay);
