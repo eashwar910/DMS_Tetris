@@ -106,7 +106,7 @@ class GameBoardTest {
 
         GameBoard board = newBoard();
         int[][] m = board.getBoardMatrix();
-        m[0][Constants.BRICK_SPAWN_X] = 7; // set top row at spawn x to occupied to force collision offscreen
+        java.util.Arrays.fill(m[0], 7); // fill top row to force offscreen collision for any brick
         boolean collided = board.createNewBrick();
         assertTrue(collided);
     }
