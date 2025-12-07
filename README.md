@@ -85,6 +85,14 @@
     - This way, you can track your progress in each game mode.
 
 
+9. Levels 
+    - Implemented a linearly increasing level logic 
+    - For every 10 lines cleared, the speed of the bricks increase (1 level higher) 
+    - It follows a linear equation  
+      `double t = Math.pow(Math.max(0.0, base - ((level - 1) * dec)), Math.max(0, level - 1));
+ms = Math.max(Constants.MIN_FALL_INTERVAL_MS, t * 1000.0);`
+
+
 ---
 ## Implemented but Not Working Properly
 1. Ghost Brick Preview
