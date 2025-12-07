@@ -5,10 +5,19 @@ import com.comp2042.core.MatrixOperations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Defines the J-shaped tetromino rotation states.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 final class JBrick implements Brick {
 
     private final List<int[][]> brickMatrix = new ArrayList<>();
 
+    /**
+     * Initializes the rotation matrices for the J-shaped brick.
+     */
     public JBrick() {
         brickMatrix.add(new int[][]{
                 {0, 0, 0, 0},

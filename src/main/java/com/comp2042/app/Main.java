@@ -11,8 +11,24 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Entry point for the application.
+ * Initializes the JavaFX UI by loading the FXML layout, configures the
+ * primary stage, and connects the GUI to game controllers.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class Main extends Application {
 
+    /**
+     * Initializes and displays the primary application window.
+     * Loads the FXML layout, obtains the GUI controller, sets up the scene,
+     * and starts the game controller.
+     *
+     * @param primaryStage the primary JavaFX stage provided by the runtime
+     * @throws Exception if the FXML resource cannot be located or loaded
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -30,6 +46,11 @@ public class Main extends Application {
     }
 
 
+    /**
+     * Launches the JavaFX application.
+     *
+     * @param args command-line arguments passed to the application
+     */
     public static void main(String[] args) {
         launch(args);
     }

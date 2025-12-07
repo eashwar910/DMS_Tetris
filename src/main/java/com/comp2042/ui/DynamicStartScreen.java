@@ -22,11 +22,19 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import javafx.animation.Animation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Animated start screen with pulsating grid, flying tetrominoes, and particles.
+ * Manages animations and rendering across layered canvases.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class DynamicStartScreen extends Pane {
 
     private final Canvas backgroundCanvas, tetrominoCanvas, particleCanvas;
@@ -44,6 +52,9 @@ public class DynamicStartScreen extends Pane {
             Color.rgb(200,120,0), Color.rgb(200,200,0), Color.rgb(0,180,0),
             Color.rgb(100,0,180), Color.rgb(180,0,0)};
 
+    /**
+     * Constructs the start screen and initializes canvases and animations.
+     */
     public DynamicStartScreen() {
         backgroundCanvas = new Canvas();
         tetrominoCanvas = new Canvas();
@@ -73,7 +84,7 @@ public class DynamicStartScreen extends Pane {
 
         spawnTimer = new Timeline(new KeyFrame(Duration.seconds(SPAWN_INTERVAL),
                 e -> spawnTetromino()));
-        spawnTimer.setCycleCount(Timeline.INDEFINITE);
+        spawnTimer.setCycleCount(Animation.INDEFINITE);
     }
 
     private void spawnTetromino() {
@@ -149,10 +160,19 @@ public class DynamicStartScreen extends Pane {
         particles.forEach(p -> p.render(gc));
     }
 
+    /**
+     * Starts background and spawn animations.
+     */
     public void start() { animationTimer.start(); spawnTimer.play(); }
+    /**
+     * Stops animations and clears active entities.
+     */
     public void stop() { animationTimer.stop(); spawnTimer.stop(); tetrominoes.clear(); particles.clear(); }
 
     @Override
+    /**
+     * Resizes layered canvases to fill the component.
+     */
     protected void layoutChildren() {
         super.layoutChildren();
         double w = getWidth(), h = getHeight();

@@ -11,6 +11,13 @@ import com.comp2042.core.GameModeHandler.GameMode;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+/**
+ * Tracks score, high scores per mode, lines cleared, and level progression.
+ * Handles loading and saving high scores from a file.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public final class Score {
 
     private final IntegerProperty score = new SimpleIntegerProperty(0);
@@ -22,6 +29,9 @@ public final class Score {
     private int highTimed = 0;
     private int highBottomsUp = 0;
 
+    /**
+     * Initializes score state and loads persisted high scores.
+     */
     public Score() {
         loadHighScore();
     }
@@ -39,6 +49,11 @@ public final class Score {
     }
 
     // set mode definition (wrapper in other class - fix)
+    /**
+     * Sets the active game mode and updates the bound high score property.
+     *
+     * @param mode the selected game mode
+     */
     public void setMode(GameMode mode) {
         this.mode = mode;
         if (mode == GameMode.NORMAL) {
@@ -54,6 +69,12 @@ public final class Score {
         return linesCleared;
     }
 
+    /**
+     * Adds points to the score and updates high scores per mode when exceeded.
+     * Persists new high score values.
+     *
+     * @param i points to add
+     */
     public void add(int i){
 
         score.setValue(score.getValue() + i);
@@ -72,12 +93,20 @@ public final class Score {
         }
     }
 
+    /**
+     * Resets score, lines cleared, and level to initial values.
+     */
     public void reset() {
         score.setValue(0);
         linesCleared.setValue(0);
         level.setValue(1);
     }
 
+    /**
+     * Adds cleared lines, updating the level based on thresholds.
+     *
+     * @param lines number of lines cleared
+     */
     public void addLines(int lines) {
         if (lines <= 0) return;
         int total = linesCleared.get() + lines;
@@ -87,6 +116,9 @@ public final class Score {
     }
 
     // load high score from the .txt file
+    /**
+     * Loads high score values from the configured file.
+     */
     private void loadHighScore() {
         Path path = Paths.get(Constants.HIGHSCORE_FILE);
         if (Files.exists(path))
@@ -126,6 +158,9 @@ public final class Score {
     }
 
     // write new high score into the .txt file
+    /**
+     * Persists high score values to the configured file.
+     */
     private void saveHighScore() {
         Path path = Paths.get(Constants.HIGHSCORE_FILE);
         try

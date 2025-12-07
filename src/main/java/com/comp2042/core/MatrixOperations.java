@@ -6,15 +6,33 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Utility functions for manipulating board and brick matrices including
+ * collision detection, merging, row clearing, and copying.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class MatrixOperations {
 
+    /**
+     * Prevents instantiation of utility class.
+     */
     private MatrixOperations(){
 
     }
 
     // rename function for better understanding
+    /**
+     * Checks whether a brick placed at the given offset collides with the background.
+     *
+     * @param matrix the background matrix
+     * @param brick the brick matrix
+     * @param x placement x-offset
+     * @param y placement y-offset
+     * @return true if any occupied cell collides or is out of bounds; false otherwise
+     */
     public static boolean collidesWithBackground(final int[][] matrix, final int[][] brick, int x, int y) {
         for (int i = 0; i < brick.length; i++) {
             for (int j = 0; j < brick[i].length; j++) {
@@ -47,6 +65,12 @@ public class MatrixOperations {
         return targetX >= getWidth(matrix);
     }
 
+    /**
+     * Creates a deep copy of a 2D matrix.
+     *
+     * @param original the source matrix
+     * @return a deep-copied matrix
+     */
     public static int[][] copy(int[][] original) {
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
@@ -59,6 +83,15 @@ public class MatrixOperations {
     }
 
     // rename function
+    /**
+     * Merges a brick into the background matrix at the specified offset.
+     *
+     * @param filledFields the background matrix
+     * @param brick the brick matrix
+     * @param x placement x-offset
+     * @param y placement y-offset
+     * @return a new matrix with the brick merged
+     */
     public static int[][] mergeBrickOntoMatrix(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
         for (int i = 0; i < brick.length; i++) {
@@ -80,6 +113,12 @@ public class MatrixOperations {
     }
 
     // rename function
+    /**
+     * Clears fully occupied rows and compacts the matrix.
+     *
+     * @param matrix the source background matrix
+     * @return details of rows removed, updated matrix, and score bonus
+     */
     public static ClearRow clearFullRows(final int[][] matrix) {
         int[][] tmp = new int[getHeight(matrix)][getWidth(matrix)];
         Deque<int[]> newRows = new ArrayDeque<>();
@@ -112,8 +151,14 @@ public class MatrixOperations {
         return new ClearRow(clearedRows.size(), tmp, scoreBonus);
     }
 
+    /**
+     * Creates a deep copy of a list of matrices.
+     *
+     * @param list list of matrices to copy
+     * @return a new list with deep-copied matrices
+     */
     public static List<int[][]> deepCopyList(List<int[][]> list){
-        return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
+        return list.stream().map(MatrixOperations::copy).toList(); // sonarqube fix
     }
 
     private static int getWidth(int[][] matrix) {

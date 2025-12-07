@@ -8,7 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-
+/**
+ * Pause overlay providing resume, main menu, and new game actions.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class PauseOverlay extends BorderPane {
 
     private Button resumeButton;
@@ -19,6 +24,9 @@ public class PauseOverlay extends BorderPane {
     private EventHandler<ActionEvent> newgameHandler;
 
 
+    /**
+     * Builds the pause overlay UI and wires button actions.
+     */
     public PauseOverlay() {
 
         // Creating the Pause Menu Box (improvise further later)
@@ -57,14 +65,29 @@ public class PauseOverlay extends BorderPane {
         this.setCenter(optionBox);
     }
 
+    /**
+     * Registers handler for the resume button.
+     *
+     * @param handler action handler
+     */
     public void setResumeHandler(EventHandler<ActionEvent> handler) {
         this.resumeHandler = handler;
     }
 
+    /**
+     * Registers handler for the main menu button.
+     *
+     * @param handler action handler
+     */
     public void setQuitHandler(EventHandler<ActionEvent> handler) {
         this.quitHandler = handler;
     }
 
+    /**
+     * Registers handler for the new game button.
+     *
+     * @param handler action handler
+     */
     public void setNewGameHandler(EventHandler<ActionEvent> handler) {
         this.newgameHandler = handler;
     }

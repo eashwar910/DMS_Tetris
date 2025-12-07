@@ -1,6 +1,13 @@
 // src/main/java/com/comp2042/Constants.java
 package com.comp2042.core;
 
+/**
+ * Defines application-wide constant values.
+ * Centralizes configuration to ensure consistency across modules.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public final class Constants {
 
     //GuiController.java
@@ -39,5 +46,8 @@ public final class Constants {
     public static final double PULSE_DURATION_MS = 300.0;
     public static final double PULSE_SCALE = 0.8;
 
+    /**
+     * Prevents instantiation of utility class.
+     */
     private Constants() {}
 }

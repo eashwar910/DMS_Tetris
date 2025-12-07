@@ -2,6 +2,13 @@ package com.comp2042.logic.workflow;
 
 import com.comp2042.core.MatrixOperations;
 
+/**
+ * Snapshot of the current view state including active brick, position,
+ * preview bricks, and held brick.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public final class ViewData {
 
     private final int[][] brickData;
@@ -10,6 +17,15 @@ public final class ViewData {
     private final int[][][] nextBrickData;  //updated to hold 3 next bricks
     private final int[][] holdBrickData; // only brick can be help and swapped so 2d array
 
+    /**
+     * Creates view data with brick and preview information.
+     *
+     * @param brickData the active brick matrix
+     * @param xPosition brick x-position
+     * @param yPosition brick y-position
+     * @param nextBrickData preview matrices for upcoming bricks
+     * @param holdBrickData matrix for the held brick
+     */
     public ViewData(int[][] brickData, int xPosition, int yPosition, int[][][] nextBrickData, int[][] holdBrickData) {
         this.brickData = brickData;
         this.xPosition = xPosition;
