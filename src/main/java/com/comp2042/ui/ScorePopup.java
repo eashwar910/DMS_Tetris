@@ -9,8 +9,20 @@ import javafx.scene.effect.Effect;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 
+/**
+ * Floating popup that displays score bonuses and combo labels with fade/translate
+ * transitions.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class ScorePopup extends BorderPane {
 
+    /**
+     * Constructs a popup with the provided text and glow styling.
+     *
+     * @param text text to display
+     */
     public ScorePopup(String text) {
         setMinHeight(200);
         setMinWidth(220);
@@ -23,6 +35,11 @@ public class ScorePopup extends BorderPane {
 
     }
 
+    /**
+     * Plays the popup transition and removes it on finish.
+     *
+     * @param list parent node list to add/remove this popup
+     */
     public void showScore(ObservableList<Node> list) {
         ParallelTransition transition = Effects.scorePopupTransition(this); // use the function defined in effects.java
         transition.setOnFinished(e -> list.remove(ScorePopup.this));
@@ -30,6 +47,13 @@ public class ScorePopup extends BorderPane {
     }
 
     // added method for combo popups
+    /**
+     * Shows bonus and combo popups based on cleared rows.
+     *
+     * @param list parent node list
+     * @param scoreBonus score bonus amount
+     * @param linesRemoved lines cleared
+     */
     public static void showForClearRow(ObservableList<Node> list, int scoreBonus, int linesRemoved) {
         ScorePopup bonusPanel = new ScorePopup("+" + scoreBonus);
         list.add(bonusPanel);

@@ -8,12 +8,28 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+/**
+ * Scene/layout utilities for centering the game board and binding positions
+ * to scene or parent dimensions.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class SceneManager {
 
     private SceneManager() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Centers the game board within its container and binds position props.
+     *
+     * @param gameBoardContainer stack pane container for the board
+     * @param gameBoard border pane board
+     * @param gamePanel grid pane panel
+     * @param gamePanelSceneX bound scene X property
+     * @param gamePanelSceneY bound scene Y property
+     */
     public static void centerGameBoard(StackPane gameBoardContainer, BorderPane gameBoard,
                                        GridPane gamePanel, DoubleProperty gamePanelSceneX,
                                        DoubleProperty gamePanelSceneY) {

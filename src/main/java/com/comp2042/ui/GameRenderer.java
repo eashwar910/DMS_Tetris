@@ -9,6 +9,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Renders the board, active brick, next bricks, and hold brick, supporting
+ * standard and upside-down visual modes with utility effects.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class GameRenderer {
 
     private final GridPane gamePanel;
@@ -31,6 +38,18 @@ public class GameRenderer {
     Rectangle[][] holdBrickRectangles;
 
     // game renderer definition
+    /**
+     * Constructs a renderer with panels and positioning bindings.
+     *
+     * @param gamePanel main board panel
+     * @param brickPanel active brick panel
+     * @param nextBrickPanel1 next brick panel (1)
+     * @param nextBrickPanel2 next brick panel (2)
+     * @param nextBrickPanel3 next brick panel (3)
+     * @param holdBrickPanel hold brick panel
+     * @param gamePanelSceneX bound scene X for positioning
+     * @param gamePanelSceneY bound scene Y for positioning
+     */
     public GameRenderer(GridPane gamePanel, GridPane brickPanel,
                         GridPane nextBrickPanel1, GridPane nextBrickPanel2, GridPane nextBrickPanel3, GridPane holdBrickPanel,
                         DoubleProperty gamePanelSceneX, DoubleProperty gamePanelSceneY) {
@@ -45,17 +64,35 @@ public class GameRenderer {
     }
 
     // method to toggle upside down mode
+    /**
+     * Enables or disables upside-down rendering.
+     *
+     * @param value whether upside-down mode is active
+     */
     public void setUpsideDown(boolean value) {
         this.isUpsideDown = value;
     }
 
     // helper to calculate visual row based on mode
     //refactored to reduce "Cognitive Complexity"
+    /**
+     * Maps a logical row to the visual row based on mode.
+     *
+     * @param logicRow the logical matrix row
+     * @param totalHeight total rows in the matrix
+     * @return visual row index
+     */
     public int getVisualRow(int logicRow, int totalHeight) {
         return isUpsideDown ?
                 (totalHeight - 1 - logicRow) : logicRow;
     }
 
+    /**
+     * Initializes all panels and grids for rendering.
+     *
+     * @param boardMatrix background matrix
+     * @param brick current view data
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = createGrid(boardMatrix.length, boardMatrix[0].length, gamePanel, true);
         rectangles = createGrid(brick.getBrickData().length, brick.getBrickData()[0].length, brickPanel, brick.getBrickData());
@@ -77,6 +114,15 @@ public class GameRenderer {
     }
 
     // createGrid definition for initGameView to handle grid creation
+    /**
+     * Creates a grid of rectangles and optionally assigns colors.
+     *
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param panel panel to populate
+     * @param dataFn either a boolean indicating board or a color matrix
+     * @return created rectangle grid
+     */
     private Rectangle[][] createGrid(int rows, int cols, GridPane panel, Object dataFn) {
         Rectangle[][] grid = new Rectangle[rows][cols];
         int[][] colorData = (dataFn instanceof int[][]) ? (int[][]) dataFn : null;
@@ -103,6 +149,12 @@ public class GameRenderer {
     }
 
     // changed to public so gui controller can access
+    /**
+     * Maps a color code to a paint.
+     *
+     * @param i color code
+     * @return paint value
+     */
     public Paint getFillColor(int i) {
         Paint returnPaint;
         switch (i) {
@@ -120,6 +172,11 @@ public class GameRenderer {
     }
 
     // Calculates Y position from bottom if upside down
+    /**
+     * Positions the active brick panel according to current view data.
+     *
+     * @param brick current view data
+     */
     public void positionBrickPanel(ViewData brick) {
         double cellWidth = gamePanel.getHgap() + Constants.BRICK_SIZE;
         double cellHeight = gamePanel.getVgap() + Constants.BRICK_SIZE;
@@ -142,6 +199,11 @@ public class GameRenderer {
 
     // refactored to reduce Cognitive Complexity
     // added internal row mirroring logic
+    /**
+     * Refreshes active brick, next bricks, and hold brick visuals.
+     *
+     * @param brick current view data
+     */
     public void refreshBrick(ViewData brick) {
         positionBrickPanel(brick);
 
@@ -159,6 +221,11 @@ public class GameRenderer {
     }
 
     // helper for refreshBrick to handle the active brick's specific mirroring logic
+    /**
+     * Updates the active brick grid with mirroring logic.
+     *
+     * @param brick current view data
+     */
     private void updateActiveBrick(ViewData brick) {
         int brickHeight = brick.getBrickData().length;
 
@@ -174,6 +241,12 @@ public class GameRenderer {
     }
 
     // helper for refreshBrick to handle standard grids
+    /**
+     * Updates a standard rectangle grid with color data.
+     *
+     * @param data color matrix
+     * @param gridRects target rectangles
+     */
     private void updateGrid(int[][] data, Rectangle[][] gridRects) {
         for (int i = 0; i < data.length; i++)
         {
@@ -185,6 +258,11 @@ public class GameRenderer {
     }
 
     // aligns logic rows to visual rows based on mode
+    /**
+     * Refreshes the background grid colors according to the board matrix.
+     *
+     * @param board background matrix
+     */
     public void refreshGameBackground(int[][] board) {
         int boardHeight = board.length;
         for (int i = 0; i < boardHeight; i++) {
@@ -197,6 +275,12 @@ public class GameRenderer {
     }
 
     // private to public
+    /**
+     * Assigns color and corner arcs to a rectangle based on code.
+     *
+     * @param color color code
+     * @param rectangle target rectangle
+     */
     public void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
         rectangle.setArcHeight(Constants.BRICK_ARC);
@@ -206,6 +290,9 @@ public class GameRenderer {
     // refactored to reduce Cognitive Complexity
     // method to cleat the board while switching menus
     // did this to fix the previous board showing bug while switching game modes
+    /**
+     * Clears all visible grids when switching menus or modes.
+     */
     public void clearAll() {
         clearGrid(displayMatrix);
         clearGrid(rectangles);
@@ -216,6 +303,11 @@ public class GameRenderer {
     }
 
     // Helper to clear a single grid
+    /**
+     * Clears a single grid to transparent.
+     *
+     * @param grid grid to clear
+     */
     private void clearGrid(Rectangle[][] grid) {
         if (grid != null)
         {
@@ -231,6 +323,13 @@ public class GameRenderer {
 
     // refactored to reduce Cognitive Complexity
     // method to apply the pulse on the bricks
+    /**
+     * Pulses landed blocks for visual feedback after hard drop.
+     *
+     * @param brickData brick matrix to pulse
+     * @param xPosition x-position
+     * @param yPosition y-position
+     */
     public void pulseLandedBlocks(int[][] brickData, int xPosition, int yPosition) {
         if (displayMatrix == null || brickData == null)
         {
@@ -250,6 +349,12 @@ public class GameRenderer {
     }
 
     // Helper to trigger pulse on a specific coordinate
+    /**
+     * Triggers a pulse effect at the given logical coordinates.
+     *
+     * @param logicCol logical column
+     * @param logicRow logical row
+     */
     private void triggerPulse(int logicCol, int logicRow) {
         int boardHeight = displayMatrix.length;
         int boardWidth = displayMatrix[0].length;

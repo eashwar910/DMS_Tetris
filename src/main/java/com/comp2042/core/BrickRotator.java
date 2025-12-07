@@ -3,11 +3,23 @@ package com.comp2042.core;
 import com.comp2042.logic.workflow.NextShapeInfo;
 import com.comp2042.logic.bricks.Brick;
 
+/**
+ * Controls rotation state for a brick, tracking the current orientation
+ * and providing the next rotation preview.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class BrickRotator {
 
     private Brick brick;
     private int currentShape = 0;
 
+    /**
+     * Computes the next rotation state for the current brick.
+     *
+     * @return information containing the next shape matrix and its index
+     */
     public NextShapeInfo getNextShape() {
         int nextShape = currentShape;
         nextShape = (++nextShape) % brick.getShapeMatrix().size();
@@ -22,6 +34,11 @@ public class BrickRotator {
         this.currentShape = currentShape;
     }
 
+    /**
+     * Assigns the active brick and resets its rotation to the default state.
+     *
+     * @param brick the brick to control for rotation
+     */
     public void setBrick(Brick brick) {
         this.brick = brick;
         currentShape = 0;

@@ -7,7 +7,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
 
-
+/**
+ * Game over overlay with restart and exit actions, supporting a special
+ * display for new high scores.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class GameOverOverlay extends BorderPane {
 
     private final Label messageLabel;
@@ -16,6 +22,9 @@ public class GameOverOverlay extends BorderPane {
     private EventHandler<ActionEvent> restartEventHandler;
     private EventHandler<ActionEvent> exitEventHandler;
 
+    /**
+     * Builds the overlay UI and wires button actions.
+     */
     public GameOverOverlay() {
         messageLabel = new Label("GAME OVER");
         messageLabel.getStyleClass().add("gameOverStyle");
@@ -43,15 +52,28 @@ public class GameOverOverlay extends BorderPane {
     }
 
     // set up the event handler methods
+    /**
+     * Registers handler for the restart button.
+     *
+     * @param handler action handler
+     */
     public void setRestartEventHandler(EventHandler<ActionEvent> handler) {
         this.restartEventHandler = handler;
     }
 
+    /**
+     * Registers handler for the exit button.
+     *
+     * @param handler action handler
+     */
     public void setExitEventHandler(EventHandler<ActionEvent> handler) {
         this.exitEventHandler = handler;
     }
 
     // two modes for the game over overlay
+    /**
+     * Configures overlay for a new high score.
+     */
     public void setHighScoreMode() {
         messageLabel.setText("NEW HIGH SCORE !!");
         messageLabel.getStyleClass().remove("gameOverStyle");
@@ -62,6 +84,9 @@ public class GameOverOverlay extends BorderPane {
         exitButton.setText("MAIN MENU");
     }
 
+    /**
+     * Configures overlay for a standard game over.
+     */
     public void setDefaultMode() {
         messageLabel.setText("GAME OVER");
         messageLabel.getStyleClass().remove("newHighScoreStyle");

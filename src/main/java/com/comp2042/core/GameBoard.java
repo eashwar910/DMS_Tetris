@@ -10,6 +10,14 @@ import com.comp2042.logic.workflow.ViewData;
 import java.util.List;
 import java.awt.Point;
 
+/**
+ * Implements the Tetris board logic including movement, rotation, holding,
+ * spawning bricks, merging into the background, row clearing, and game reset.
+ * Coordinates with generators and rotators to maintain gameplay state.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class GameBoard implements Board {
 
     private final int width;
@@ -22,6 +30,12 @@ public class GameBoard implements Board {
     private com.comp2042.logic.bricks.Brick heldBrick;
     private boolean holdUsed;
 
+    /**
+     * Constructs a game board with specified dimensions and initializes state.
+     *
+     * @param width number of columns in the board
+     * @param height number of rows in the board
+     */
     public GameBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -32,6 +46,11 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Moves the active brick one row downward.
+     *
+     * @return true if movement succeeds, false if blocked
+     */
     public boolean moveBrickDown() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
@@ -47,6 +66,11 @@ public class GameBoard implements Board {
 
 
     @Override
+    /**
+     * Moves the active brick one column to the left.
+     *
+     * @return true if movement succeeds, false otherwise
+     */
     public boolean moveBrickLeft() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
@@ -61,6 +85,11 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Moves the active brick one column to the right.
+     *
+     * @return true if movement succeeds, false otherwise
+     */
     public boolean moveBrickRight() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
@@ -75,6 +104,12 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Attempts to rotate the active brick counterclockwise.
+     * Applies horizontal offsets if the immediate rotation collides.
+     *
+     * @return true if rotation succeeds, false otherwise
+     */
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.getNextShape();
@@ -97,6 +132,12 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Holds the current brick or swaps it with the held one.
+     * Validates single-use per spawn and spawn collision.
+     *
+     * @return true if hold or swap succeeds, false otherwise
+     */
     public boolean holdBrick() {
 
         // hold can one hold one block and swap
@@ -139,6 +180,11 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Spawns a new brick at the default position and resets hold usage.
+     *
+     * @return true if spawn collides with background, false otherwise
+     */
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
@@ -172,11 +218,19 @@ public class GameBoard implements Board {
     }
 
     @Override
+    /**
+     * Locks the active brick into the background matrix at its current offset.
+     */
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.mergeBrickOntoMatrix(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
     @Override
+    /**
+     * Clears full rows from the background and updates the board matrix.
+     *
+     * @return summary data of cleared rows and the updated matrix
+     */
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.clearFullRows(currentGameMatrix);
         currentGameMatrix = clearRow.getNewMatrix();
@@ -191,6 +245,9 @@ public class GameBoard implements Board {
 
 
     @Override
+    /**
+     * Resets board, score, generators, and spawns the first brick.
+     */
     public void newGame() {
         currentGameMatrix = new int[width][height];
         score.reset();
@@ -200,6 +257,9 @@ public class GameBoard implements Board {
         createNewBrick();
     }
 
+    /**
+     * Empties the hold slot and resets usage flags.
+     */
     public void clearHold() {
         heldBrick = null;
         holdUsed = false;

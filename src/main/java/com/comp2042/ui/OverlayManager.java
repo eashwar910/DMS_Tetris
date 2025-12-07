@@ -13,6 +13,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+/**
+ * Coordinates start, help, pause, and game-over overlays; controls transitions,
+ * countdowns, and interaction with music and game controller.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public final class OverlayManager {
 
     private final Region startOverlay;
@@ -31,6 +38,14 @@ public final class OverlayManager {
     private MusicManager musicManager;
     private boolean helpFromStart = false;
 
+    /**
+     * Creates an overlay manager with references to overlay regions.
+     *
+     * @param startOverlay start screen overlay
+     * @param helpOverlay help overlay
+     * @param pauseOverlay pause overlay
+     * @param gameOverOverlay game over overlay
+     */
     public OverlayManager(Region startOverlay, Region helpOverlay, Region pauseOverlay, Region gameOverOverlay) {
         this.startOverlay = startOverlay;
         this.helpOverlay = helpOverlay;
@@ -38,6 +53,11 @@ public final class OverlayManager {
         this.gameOverOverlay = gameOverOverlay;
     }
 
+    /**
+     * Binds overlay size to its scene or parent pane.
+     *
+     * @param overlay overlay region to bind
+     */
     public void bindOverlayFill(Region overlay) {
 
         // transfer the scene high and width calculation methods to overlay manager
@@ -58,6 +78,21 @@ public final class OverlayManager {
 
     // centralized overlay setup workflow
     // refactored to reduce Cognitive Complexity
+    /**
+     * Wires overlays, buttons, and handlers; initializes visibility and music.
+     *
+     * @param controller GUI controller
+     * @param musicManager music manager
+     * @param dynamicStartScreen animated start screen
+     * @param gamePanel main game grid panel
+     * @param playButton play button
+     * @param raceButton timed mode button
+     * @param mineButton upside-down mode button
+     * @param helpButton help button
+     * @param closeHelpButton close help button
+     * @param pauseScreen pause overlay content
+     * @param gameOverPanel game-over overlay content
+     */
     public void setup(GuiController controller,
                       MusicManager musicManager,
                       DynamicStartScreen dynamicStartScreen,
@@ -191,6 +226,9 @@ public final class OverlayManager {
 
     // start game method with proper overlay flow
     // changed to start normal game method
+    /**
+     * Starts a normal game with countdown and music setup.
+     */
     public void startNormalGame() {
         prepareForStart();
         showCountdownThen(() -> {
@@ -209,6 +247,9 @@ public final class OverlayManager {
     }
 
     // start the timed game mode
+    /**
+     * Starts a timed game mode with countdown and music setup.
+     */
     public void startTimedGame() {
         prepareForStart();
         showCountdownThen(() -> {
@@ -229,6 +270,9 @@ public final class OverlayManager {
     }
 
     // start upside down game mode
+    /**
+     * Starts the upside-down game mode with countdown and music setup.
+     */
     public void startUpsideDownGame() {
         prepareForStart();
         showCountdownThen(() -> {
@@ -247,6 +291,9 @@ public final class OverlayManager {
     }
 
     // resume game
+    /**
+     * Resumes gameplay from pause, restoring timers and music.
+     */
     public void resumeGame() {
         controller.getIsPause().set(false);
         if (controller.getTimeLine() != null) controller.getTimeLine().play();
@@ -277,6 +324,9 @@ public final class OverlayManager {
     }
 
     // toggle pause method moved
+    /**
+     * Toggles the pause overlay and suspends/resumes timers and music.
+     */
     public void togglePause() {
         if (!controller.getIsPause().get()) {
             controller.getIsPause().set(true);
@@ -291,12 +341,20 @@ public final class OverlayManager {
         }
     }
 
+    /**
+     * Exits the application.
+     */
     public void quitGame() {
         Platform.exit();
         System.exit(0);
     }
 
     // new game method
+    /**
+     * Starts a new game session, resetting overlays, timers, and music.
+     *
+     * @param actionEvent action event triggering the reset
+     */
     public void newGame(ActionEvent actionEvent) {
         if (controller.getTimeLine() != null) controller.getTimeLine().stop();
         if (gameOverPanel != null) gameOverPanel.setVisible(false);
@@ -328,6 +386,11 @@ public final class OverlayManager {
 
     // refactored to reduce Cognitive Complexity
     // game over overlay
+    /**
+     * Shows the game-over overlay and configures high-score or standard mode.
+     *
+     * @param newHighScore whether a new high score was achieved
+     */
     public void gameOver(boolean newHighScore) {
         stopRunningGame();
 

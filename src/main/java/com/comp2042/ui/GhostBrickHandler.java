@@ -10,6 +10,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Renders and positions a translucent ghost brick indicating the landing
+ * position of the active brick, supporting upside-down mode.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class GhostBrickHandler {
 
     private final GridPane gamePanel;
@@ -24,6 +31,15 @@ public class GhostBrickHandler {
     // create a ghost brick panel with the same proportions as boreder pane
     // place it on top of the brick panel
     // add it as a child of pane
+    /**
+     * Constructs the ghost handler with references to panels and renderer.
+     *
+     * @param gamePanel main board panel
+     * @param brickPanel active brick panel
+     * @param gamePanelSceneX bound scene X for positioning
+     * @param gamePanelSceneY bound scene Y for positioning
+     * @param renderer renderer used for colors and row mapping
+     */
     public GhostBrickHandler(GridPane gamePanel,
                              GridPane brickPanel,
                              DoubleProperty gamePanelSceneX,
@@ -51,10 +67,20 @@ public class GhostBrickHandler {
     }
 
     // setter for mode
+    /**
+     * Enables or disables upside-down mode.
+     *
+     * @param value whether upside-down mode is active
+     */
     public void setUpsideDown(boolean value) {
         this.isUpsideDown = value;
     }
 
+    /**
+     * Initializes ghost rectangles according to the active brick size.
+     *
+     * @param brick current view data
+     */
     public void init(ViewData brick) {
 
         ghostRectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
@@ -77,6 +103,12 @@ public class GhostBrickHandler {
     }
 
     // calculate landing position by simulating fall
+    /**
+     * Updates the ghost colors and positions the panel at the landing spot.
+     *
+     * @param brick current view data
+     * @param boardMatrix background matrix
+     */
     public void update(ViewData brick, int[][] boardMatrix) {
 
         if (brick == null || boardMatrix == null) return;
@@ -96,11 +128,21 @@ public class GhostBrickHandler {
         ghostPanel.setVisible(yf >= 0);
     }
 
+    /**
+     * Hides the ghost panel.
+     */
     public void clear() {
         ghostPanel.setVisible(false);
     }
 
     // calculates position differently if upside down
+    /**
+     * Positions the ghost panel relative to the brick panel.
+     *
+     * @param xCurrent current x-position
+     * @param yCurrent current y-position
+     * @param yFinal landing y-position
+     */
     private void positionGhostPanel(int xCurrent, int yCurrent, int yFinal) {
         double cellWidth = gamePanel.getHgap() + Constants.BRICK_SIZE;
         double cellHeight = gamePanel.getVgap() + Constants.BRICK_SIZE;
@@ -117,6 +159,11 @@ public class GhostBrickHandler {
         ghostPanel.setLayoutY(brickPanel.getLayoutY() + yOffset);
     }
 
+    /**
+     * Ensures rectangles are initialized for the ghost brick.
+     *
+     * @param brick current view data
+     */
     private void ensureRectangles(ViewData brick) {
         if (ghostRectangles == null)
         {
@@ -126,6 +173,11 @@ public class GhostBrickHandler {
 
     // apply colours for the ghost block - same as actual block
     // added internal row mirroring logic for upside down mode
+    /**
+     * Applies translucent colors to represent the ghost brick.
+     *
+     * @param brick current view data
+     */
     private void applyGhostColors(ViewData brick) {
         int[][] shape = brick.getBrickData();
         int brickHeight = shape.length;

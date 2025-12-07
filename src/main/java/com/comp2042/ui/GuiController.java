@@ -29,6 +29,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 
+/**
+ * JavaFX controller coordinating UI initialization, input handling, rendering,
+ * overlays, and bindings with the core game logic.
+ *
+ * @author Eashwar
+ * @version 1.0
+ */
 public class GuiController implements Initializable, GameEventListener {
 
     private final GameLoopManager gameLoopManager = new GameLoopManager(this);
@@ -132,6 +139,12 @@ public class GuiController implements Initializable, GameEventListener {
     private ViewData lastViewData;
 
     @Override
+    /**
+     * Initializes the UI components, renderer, overlays, input, and bindings.
+     *
+     * @param location FXML resource location
+     * @param resources resource bundle
+     */
     public void initialize(URL location, ResourceBundle resources) {
 
         // initialize renderer
@@ -202,6 +215,11 @@ public class GuiController implements Initializable, GameEventListener {
     }
 
     // helper method to switch modes in renderers
+    /**
+     * Toggles upside-down rendering mode for renderer and ghost handler.
+     *
+     * @param enable whether to enable upside-down mode
+     */
     public void setUpsideDownMode(boolean enable) {
         if (gameRenderer != null) gameRenderer.setUpsideDown(enable);
         if (ghostBrickHandler != null) ghostBrickHandler.setUpsideDown(enable);
@@ -212,10 +230,20 @@ public class GuiController implements Initializable, GameEventListener {
         }
     }
 
+    /**
+     * Indicates if the game is active.
+     *
+     * @return true if playing; false otherwise
+     */
     public boolean isPlaying() {
         return gameLoopManager.isPlaying();
     }
 
+    /**
+     * Handles a down movement event routed from input.
+     *
+     * @param event the move event
+     */
     public void moveDown(MoveEvent event) {
         if (gameLoopManager.isPlaying())
         {
@@ -228,6 +256,11 @@ public class GuiController implements Initializable, GameEventListener {
         gamePanel.requestFocus();
     }
 
+    /**
+     * Displays a transient score popup when rows are cleared.
+     *
+     * @param clearRow clear-row summary
+     */
     public void showScorePopup(ClearRow clearRow) {
         if (clearRow != null && clearRow.getLinesRemoved() > 0) {
             ScorePopup.showForClearRow(groupNotification.getChildren(), clearRow.getScoreBonus(), clearRow.getLinesRemoved());
@@ -238,6 +271,12 @@ public class GuiController implements Initializable, GameEventListener {
     public GameLoopManager getGameLoopManager() { return gameLoopManager; }
 
     @Override
+    /**
+     * Initializes game view and ghost brick handling.
+     *
+     * @param boardMatrix background matrix
+     * @param brick current view data
+     */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         gameLoopManager.setupTimeline();
 
@@ -258,6 +297,11 @@ public class GuiController implements Initializable, GameEventListener {
     }
 
     @Override
+    /**
+     * Refreshes background rendering and updates ghost state.
+     *
+     * @param board the updated background matrix
+     */
     public void refreshGameBackground(int[][] board) {
         lastBoardMatrix = board;
         gameRenderer.refreshGameBackground(board);
@@ -270,10 +314,18 @@ public class GuiController implements Initializable, GameEventListener {
     public void refreshGameBackground(int[][] board, ViewData brick) { gameRenderer.refreshGameBackground(board); lastBoardMatrix = board; lastViewData = brick; }
 
     @Override
+    /**
+     * Registers the input event listener.
+     *
+     * @param eventListener listener to register
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
 
+    /**
+     * Clears and resets UI state during transitions between game modes.
+     */
     public void gameModeTransition() {
         if (gameLoopManager.getTimeLine() != null) gameLoopManager.getTimeLine().stop();
         setBrickPanelVisible(false);
@@ -337,6 +389,11 @@ public class GuiController implements Initializable, GameEventListener {
     }
 
     // updating ghost brick every brick (refactor later !)
+    /**
+     * Updates or clears the ghost brick representation based on state.
+     *
+     * @param brick latest view data
+     */
     public void updateGhost(ViewData brick) {
         lastViewData = brick;
         boolean show = gameLoopManager.isPlaying() && !(startOverlay != null && startOverlay.isVisible());
@@ -352,12 +409,24 @@ public class GuiController implements Initializable, GameEventListener {
 
     // pulse method
     @Override
+    /**
+     * Triggers a pulse animation for newly landed blocks after hard drop.
+     *
+     * @param brickShape the brick matrix
+     * @param xPosition x-position
+     * @param yPosition y-position
+     */
     public void pulseLandedBlocks(int[][] brickShape, int xPosition, int yPosition) {
         if (gameRenderer != null && brickShape != null) {
             gameRenderer.pulseLandedBlocks(brickShape, xPosition, yPosition);
         }
     }
 
+    /**
+     * Shows or hides the brick panel and clears ghost when hidden.
+     *
+     * @param visible whether the brick panel should be visible
+     */
     public void setBrickPanelVisible(boolean visible) {
         if (brickPanel != null) brickPanel.setVisible(visible);
         if (!visible && ghostBrickHandler != null) ghostBrickHandler.clear();
